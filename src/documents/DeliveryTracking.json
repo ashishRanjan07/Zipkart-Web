@@ -1,0 +1,245 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["order_tracking_events", "partner_location_history", "delivery_otp_verifications", "delivery_photo_proofs", "delivery_attempts"],
+    "description": "Powers real-time delivery tracking — partner GPS history, order status events visible to customers, OTP-based delivery confirmation, photo proof on delivery, and failed delivery attempt logging.",
+    "primary_keys": {
+      "order_tracking_events": "event_id",
+      "partner_location_history": "location_id",
+      "delivery_otp_verifications": "otp_verification_id",
+      "delivery_photo_proofs": "proof_id",
+      "delivery_attempts": "attempt_id"
+    },
+    "indexes": {
+      "order_tracking_events": ["order_id", "event_type", "created_at (DESC)"],
+      "partner_location_history": [
+        "partner_id",
+        "order_id",
+        "recorded_at (DESC)",
+        "composite: (partner_id, recorded_at) — used for live tracking"
+      ],
+      "delivery_attempts": ["order_id", "partner_id", "attempt_number"]
+    },
+    "enums": {
+      "tracking_event_type": [
+        "order_placed",
+        "payment_confirmed",
+        "store_accepted",
+        "picking_started",
+        "picking_completed",
+        "packing_completed",
+        "partner_assigned",
+        "partner_reached_store",
+        "order_picked_up",
+        "out_for_delivery",
+        "partner_nearby_500m",
+        "delivery_attempted",
+        "otp_verified",
+        "delivered",
+        "delivery_failed",
+        "return_initiated",
+        "cancelled"
+      ],
+      "delivery_failure_reason": [
+        "customer_unreachable",
+        "customer_refused",
+        "wrong_address",
+        "gate_closed",
+        "customer_not_home",
+        "cod_amount_unavailable",
+        "safety_concern",
+        "partner_emergency",
+        "weather_conditions"
+      ],
+      "otp_verification_type": ["standard_4digit", "missed_call", "voice_otp"],
+      "proof_type": ["photo_at_door", "signature", "self_signature_by_partner"]
+    },
+    "real_time_notes": [
+      "partner_location_history uses time-series optimized storage (TimescaleDB or InfluxDB recommended)",
+      "Location points collected every 10 seconds while partner is on delivery",
+      "Customer tracking URL is shareable and expires after order delivery + 2 hours",
+      "Nearby alert (500m) triggered via geofence check in real-time",
+      "OTP is 4 digits, valid for 10 minutes after partner marks 'arrived'"
+    ]
+  },
+
+  "order_tracking_events": [
+    {
+      "event_id": "te_001_placed",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "event_type": "order_placed",
+      "event_title": "Order Placed",
+      "event_description": "Your order has been placed and we're confirming payment.",
+      "is_visible_to_customer": true,
+      "actor_type": "user",
+      "actor_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "partner_lat": null,
+      "partner_lng": null,
+      "created_at": "2026-06-06T21:15:00.000Z"
+    },
+    {
+      "event_id": "te_002_payment",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "event_type": "payment_confirmed",
+      "event_title": "Payment Confirmed",
+      "event_description": "Payment of Rs.268 confirmed via UPI.",
+      "is_visible_to_customer": true,
+      "actor_type": "system",
+      "actor_id": "system_payment",
+      "partner_lat": null,
+      "partner_lng": null,
+      "created_at": "2026-06-06T21:15:22.000Z"
+    },
+    {
+      "event_id": "te_003_store_accepted",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "event_type": "store_accepted",
+      "event_title": "Store Preparing Order",
+      "event_description": "Zipkart Noida Sector 62 has accepted your order and is preparing it.",
+      "is_visible_to_customer": true,
+      "actor_type": "system",
+      "actor_id": "ds_noida_sec62",
+      "partner_lat": null,
+      "partner_lng": null,
+      "created_at": "2026-06-06T21:15:30.000Z"
+    },
+    {
+      "event_id": "te_004_out_for_delivery",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "event_type": "out_for_delivery",
+      "event_title": "Out for Delivery",
+      "event_description": "Rajesh Kumar (BLK-1423) is on the way with your order. ETA: 6 minutes.",
+      "is_visible_to_customer": true,
+      "actor_type": "partner",
+      "actor_id": "del_rajesh_1423",
+      "partner_lat": 28.6141,
+      "partner_lng": 77.2088,
+      "eta_minutes": 6,
+      "tracking_url": "https://track.zipkart.com/live/o1a2b3c4",
+      "created_at": "2026-06-06T21:19:45.000Z"
+    },
+    {
+      "event_id": "te_005_nearby",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "event_type": "partner_nearby_500m",
+      "event_title": "Partner is Nearby",
+      "event_description": "Rajesh Kumar is 500m away. Be ready to receive your order!",
+      "is_visible_to_customer": true,
+      "actor_type": "system_geofence",
+      "actor_id": "geofence_trigger",
+      "partner_lat": 28.6140,
+      "partner_lng": 77.2091,
+      "eta_minutes": 2,
+      "created_at": "2026-06-06T21:22:30.000Z"
+    },
+    {
+      "event_id": "te_006_delivered",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "event_type": "delivered",
+      "event_title": "Order Delivered!",
+      "event_description": "Your order was delivered in 9 minutes. Enjoy!",
+      "is_visible_to_customer": true,
+      "actor_type": "partner",
+      "actor_id": "del_rajesh_1423",
+      "partner_lat": 28.6139,
+      "partner_lng": 77.2090,
+      "created_at": "2026-06-06T21:24:00.000Z"
+    }
+  ],
+
+  "partner_location_history": [
+    {
+      "location_id": "plh_001",
+      "partner_id": "del_rajesh_1423",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "latitude": 28.6141,
+      "longitude": 77.2088,
+      "accuracy_meters": 8.0,
+      "speed_kmph": 18.5,
+      "heading_degrees": 145,
+      "battery_pct": 78,
+      "network_type": "4g",
+      "recorded_at": "2026-06-06T21:19:45.000Z"
+    },
+    {
+      "location_id": "plh_002",
+      "partner_id": "del_rajesh_1423",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "latitude": 28.6140,
+      "longitude": 77.2090,
+      "accuracy_meters": 6.0,
+      "speed_kmph": 12.0,
+      "heading_degrees": 180,
+      "battery_pct": 77,
+      "network_type": "4g",
+      "recorded_at": "2026-06-06T21:20:05.000Z"
+    },
+    {
+      "location_id": "plh_n",
+      "partner_id": "del_rajesh_1423",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "latitude": 28.6139,
+      "longitude": 77.2090,
+      "accuracy_meters": 4.0,
+      "speed_kmph": 0.0,
+      "heading_degrees": null,
+      "battery_pct": 75,
+      "network_type": "4g",
+      "recorded_at": "2026-06-06T21:24:00.000Z"
+    }
+  ],
+
+  "delivery_otp_verification": {
+    "otp_verification_id": "dotpv_001",
+    "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+    "partner_id": "del_rajesh_1423",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "verification_type": "standard_4digit",
+    "otp_hash": "$2b$10$deliveryOtpHash1234567890abcd",
+    "otp_issued_at": "2026-06-06T21:23:00.000Z",
+    "otp_expires_at": "2026-06-06T21:33:00.000Z",
+    "otp_entered_by_partner_at": "2026-06-06T21:24:00.000Z",
+    "attempts": 1,
+    "is_verified": true,
+    "verified_at": "2026-06-06T21:24:00.000Z",
+    "partner_lat_at_verification": 28.6139,
+    "partner_lng_at_verification": 77.2090,
+    "distance_from_delivery_address_m": 12
+  },
+
+  "delivery_photo_proof": {
+    "proof_id": "dphoto_001",
+    "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+    "partner_id": "del_rajesh_1423",
+    "proof_type": "photo_at_door",
+    "photo_url": "https://zipkart-delivery-proofs.s3.ap-south-1.amazonaws.com/proofs/2026/06/06/o1a2b3c4_delivery.jpg",
+    "photo_thumbnail_url": "https://zipkart-delivery-proofs.s3.ap-south-1.amazonaws.com/proofs/2026/06/06/thumb_o1a2b3c4.jpg",
+    "photo_taken_lat": 28.6139,
+    "photo_taken_lng": 77.2090,
+    "photo_taken_at": "2026-06-06T21:23:55.000Z",
+    "is_approved": true,
+    "reviewed_by": null,
+    "reviewed_at": null,
+    "notes": null
+  },
+
+  "delivery_attempt": {
+    "attempt_id": "da_failed_001",
+    "order_id": "ord_failed_delivery_001",
+    "partner_id": "del_other_partner",
+    "attempt_number": 1,
+    "attempted_at": "2026-06-05T20:00:00.000Z",
+    "partner_lat": 28.6100,
+    "partner_lng": 77.2100,
+    "failure_reason": "customer_unreachable",
+    "partner_notes": "Rang bell 3 times. No response. Called customer — phone switched off.",
+    "customer_phone_attempts": 2,
+    "otp_requested": true,
+    "otp_verified": false,
+    "photo_proof_url": "https://zipkart-delivery-proofs.s3.ap-south-1.amazonaws.com/proofs/failed/ord_failed_001_attempt1.jpg",
+    "order_returned_to_store": true,
+    "returned_at": "2026-06-05T20:30:00.000Z",
+    "reattempt_scheduled": false,
+    "reattempt_at": null,
+    "created_at": "2026-06-05T20:00:00.000Z"
+  }
+}

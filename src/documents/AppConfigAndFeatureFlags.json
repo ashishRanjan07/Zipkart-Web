@@ -1,0 +1,297 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["app_configs", "feature_flags", "app_config_audit_log", "maintenance_windows", "force_update_configs", "ab_test_experiments"],
+    "description": "Remote configuration system for the Zipkart platform. Controls app behavior without code deploys — feature flags, A/B experiments, maintenance windows, force-update rules, and all key-value config params.",
+    "primary_keys": {
+      "app_configs": "config_id",
+      "feature_flags": "flag_id",
+      "maintenance_windows": "maintenance_id",
+      "force_update_configs": "update_rule_id",
+      "ab_test_experiments": "experiment_id"
+    },
+    "indexes": {
+      "app_configs": ["config_key (UNIQUE)", "category", "is_active"],
+      "feature_flags": ["flag_key (UNIQUE)", "status", "rollout_pct"],
+      "ab_test_experiments": ["status", "start_at", "end_at"]
+    },
+    "enums": {
+      "config_data_type": ["string", "integer", "float", "boolean", "json", "csv_list"],
+      "config_category": ["delivery", "payments", "catalog", "notifications", "users", "partners", "promotions", "system", "search", "loyalty"],
+      "config_environment": ["production", "staging", "development"],
+      "feature_flag_status": ["enabled", "disabled", "rollout", "sunset"],
+      "rollout_strategy": ["all_users", "percentage_random", "user_id_list", "user_segment", "dark_store_ids", "platform"],
+      "experiment_status": ["draft", "running", "paused", "concluded", "archived"],
+      "maintenance_type": ["full_maintenance", "partial_maintenance", "read_only_mode", "partner_app_only"],
+      "force_update_type": ["mandatory", "recommended"]
+    }
+  },
+
+  "app_configs": [
+    {
+      "config_id": "cfg_delivery_sla_default",
+      "config_key": "delivery.sla_target_minutes",
+      "config_category": "delivery",
+      "data_type": "integer",
+      "value": "12",
+      "default_value": "12",
+      "description": "Default SLA target in minutes for all dark stores unless overridden at store level.",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_9f8a7b6c",
+      "last_changed_at": "2024-01-15T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "config_id": "cfg_min_order_value",
+      "config_key": "cart.min_order_value_inr",
+      "config_category": "catalog",
+      "data_type": "float",
+      "value": "0.0",
+      "default_value": "0.0",
+      "description": "Minimum order value in INR to place an order. 0 = no minimum.",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_9f8a7b6c",
+      "last_changed_at": "2024-01-15T10:00:00.000Z",
+      "version": 2
+    },
+    {
+      "config_id": "cfg_cod_max",
+      "config_key": "payments.cod_max_order_value_inr",
+      "config_category": "payments",
+      "data_type": "float",
+      "value": "2000.0",
+      "default_value": "2000.0",
+      "description": "Maximum order value allowed for Cash on Delivery payment.",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_4e5f6a7b",
+      "last_changed_at": "2025-06-01T10:00:00.000Z",
+      "version": 3
+    },
+    {
+      "config_id": "cfg_wallet_max_balance",
+      "config_key": "wallet.max_balance_inr",
+      "config_category": "payments",
+      "data_type": "float",
+      "value": "10000.0",
+      "default_value": "10000.0",
+      "description": "Maximum wallet balance a user can hold at any time (RBI guideline compliance).",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_4e5f6a7b",
+      "last_changed_at": "2024-06-01T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "config_id": "cfg_loyalty_points_per_100",
+      "config_key": "loyalty.points_per_100_inr_gold_tier",
+      "config_category": "loyalty",
+      "data_type": "integer",
+      "value": "12",
+      "default_value": "12",
+      "description": "Loyalty points earned per Rs.100 spent for Gold tier users.",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_9f8a7b6c",
+      "last_changed_at": "2024-01-15T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "config_id": "cfg_razorpay_key_id",
+      "config_key": "payments.razorpay_key_id",
+      "config_category": "payments",
+      "data_type": "string",
+      "value": "rzp_live_XXXXXXXXXXXXXXXX",
+      "default_value": null,
+      "description": "Razorpay Live API Key ID. SENSITIVE — requires payments.view_payment_gateway_keys permission.",
+      "is_active": true,
+      "is_secret": true,
+      "environment": "production",
+      "last_changed_by": "adm_4e5f6a7b",
+      "last_changed_at": "2025-01-01T00:00:00.000Z",
+      "version": 2
+    },
+    {
+      "config_id": "cfg_support_email",
+      "config_key": "system.support_email",
+      "config_category": "system",
+      "data_type": "string",
+      "value": "support@zipkart.com",
+      "default_value": "support@zipkart.com",
+      "description": "Primary customer support email displayed in app.",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_9f8a7b6c",
+      "last_changed_at": "2024-01-15T10:00:00.000Z",
+      "version": 1
+    },
+    {
+      "config_id": "cfg_otp_expiry_seconds",
+      "config_key": "auth.otp_expiry_seconds",
+      "config_category": "system",
+      "data_type": "integer",
+      "value": "300",
+      "default_value": "300",
+      "description": "OTP validity duration in seconds (300 = 5 minutes).",
+      "is_active": true,
+      "is_secret": false,
+      "environment": "production",
+      "last_changed_by": "adm_9f8a7b6c",
+      "last_changed_at": "2024-01-15T10:00:00.000Z",
+      "version": 1
+    }
+  ],
+
+  "feature_flags": [
+    {
+      "flag_id": "ff_zipkart_plus_subscription",
+      "flag_key": "feature.subscription.zipkart_plus_enabled",
+      "name": "Zipkart Plus Subscription",
+      "description": "Enable Zipkart Plus subscription plan offering on the app.",
+      "status": "enabled",
+      "rollout_strategy": "all_users",
+      "rollout_pct": 100,
+      "rollout_user_ids": [],
+      "rollout_user_segments": [],
+      "rollout_dark_store_ids": [],
+      "rollout_platforms": ["android", "ios", "web"],
+      "min_app_version_android": "4.5.0",
+      "min_app_version_ios": "4.5.0",
+      "enabled_by": "adm_9f8a7b6c",
+      "enabled_at": "2026-01-01T00:00:00.000Z",
+      "created_at": "2025-12-01T10:00:00.000Z",
+      "updated_at": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "flag_id": "ff_whatsapp_notifications",
+      "flag_key": "feature.notifications.whatsapp_enabled",
+      "name": "WhatsApp Notifications",
+      "description": "Enable WhatsApp notification channel for order updates.",
+      "status": "rollout",
+      "rollout_strategy": "percentage_random",
+      "rollout_pct": 20,
+      "rollout_user_ids": [],
+      "rollout_user_segments": ["gold_tier", "platinum_tier"],
+      "rollout_dark_store_ids": [],
+      "rollout_platforms": ["android", "ios"],
+      "min_app_version_android": "4.7.0",
+      "min_app_version_ios": "4.7.0",
+      "enabled_by": "adm_9f8a7b6c",
+      "enabled_at": "2026-06-01T00:00:00.000Z",
+      "created_at": "2026-05-15T10:00:00.000Z",
+      "updated_at": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "flag_id": "ff_loyalty_points_v2",
+      "flag_key": "feature.loyalty.v2_tier_system",
+      "name": "Loyalty Points V2 System",
+      "description": "New 5-tier loyalty system replacing old 3-tier model.",
+      "status": "enabled",
+      "rollout_strategy": "all_users",
+      "rollout_pct": 100,
+      "min_app_version_android": "4.7.0",
+      "min_app_version_ios": "4.7.0",
+      "enabled_by": "adm_9f8a7b6c",
+      "enabled_at": "2026-03-01T00:00:00.000Z",
+      "created_at": "2026-02-01T10:00:00.000Z",
+      "updated_at": "2026-03-01T00:00:00.000Z"
+    }
+  ],
+
+  "maintenance_windows": [
+    {
+      "maintenance_id": "maint_20260615_db_upgrade",
+      "maintenance_type": "partial_maintenance",
+      "title": "Scheduled Database Maintenance",
+      "message_for_users": "We're upgrading our systems for a better experience. Some features may be temporarily unavailable from 02:00 AM to 04:00 AM IST on June 15.",
+      "message_for_admins": "DB upgrade: Postgres 15 -> 16. Read-only mode active. Writes blocked on orders and payments.",
+      "affected_services": ["order_placement", "payment_processing", "cart_updates"],
+      "read_only_mode": true,
+      "status": "scheduled",
+      "scheduled_start": "2026-06-15T20:30:00.000Z",
+      "scheduled_end": "2026-06-15T22:30:00.000Z",
+      "actual_start": null,
+      "actual_end": null,
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-06-07T10:00:00.000Z"
+    }
+  ],
+
+  "force_update_configs": [
+    {
+      "update_rule_id": "fu_android_min_4_0_0",
+      "platform": "android",
+      "update_type": "mandatory",
+      "min_supported_version": "4.0.0",
+      "current_latest_version": "4.7.2",
+      "recommended_version": "4.7.2",
+      "update_message": "A required update is available. Please update Zipkart to continue.",
+      "update_url_android": "https://play.google.com/store/apps/details?id=com.zipkart.app",
+      "is_active": true,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "update_rule_id": "fu_ios_min_4_0_0",
+      "platform": "ios",
+      "update_type": "mandatory",
+      "min_supported_version": "4.0.0",
+      "current_latest_version": "4.7.2",
+      "recommended_version": "4.7.2",
+      "update_message": "A required update is available. Please update Zipkart to continue.",
+      "update_url_ios": "https://apps.apple.com/in/app/zipkart/id1234567890",
+      "is_active": true,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    }
+  ],
+
+  "ab_test_experiments": [
+    {
+      "experiment_id": "exp_checkout_upsell_v2",
+      "name": "Checkout Upsell Widget V2",
+      "hypothesis": "Showing frequently-bought-together items at checkout will increase AOV by 8%.",
+      "status": "running",
+      "rollout_strategy": "percentage_random",
+      "rollout_pct": 50,
+      "platforms": ["android", "ios"],
+      "variants": [
+        {
+          "variant_id": "ctrl",
+          "name": "Control",
+          "description": "No upsell widget at checkout",
+          "traffic_pct": 50
+        },
+        {
+          "variant_id": "var_a",
+          "name": "Frequently Bought Together",
+          "description": "Show 3 frequently-bought-together products at checkout",
+          "traffic_pct": 50
+        }
+      ],
+      "primary_metric": "avg_order_value",
+      "secondary_metrics": ["conversion_rate", "items_per_order"],
+      "min_sample_size": 10000,
+      "current_sample_size": 8420,
+      "start_at": "2026-06-01T00:00:00.000Z",
+      "end_at": "2026-06-30T23:59:59.000Z",
+      "results": {
+        "control_aov": 320.25,
+        "variant_a_aov": 341.80,
+        "lift_pct": 6.73,
+        "is_statistically_significant": false,
+        "p_value": 0.08,
+        "confidence_pct": 92
+      },
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-05-28T10:00:00.000Z"
+    }
+  ]
+}

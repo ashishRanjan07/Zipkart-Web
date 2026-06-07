@@ -1,0 +1,230 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["store_staff", "staff_shifts", "staff_attendance", "staff_tasks", "staff_performance_snapshots"],
+    "description": "Manages all dark store staff — pickers, packers, ops leads — including roster scheduling, attendance tracking, task assignment, and performance metrics.",
+    "primary_keys": {
+      "store_staff": "staff_id",
+      "staff_shifts": "shift_id",
+      "staff_attendance": "attendance_id",
+      "staff_tasks": "task_id",
+      "staff_performance_snapshots": "snapshot_id"
+    },
+    "indexes": {
+      "store_staff": ["employee_code (UNIQUE)", "dark_store_id", "role", "status", "is_active"],
+      "staff_shifts": ["staff_id", "dark_store_id", "shift_date", "status"],
+      "staff_attendance": ["staff_id", "attendance_date", "composite: (staff_id, attendance_date) UNIQUE"],
+      "staff_tasks": ["assigned_to_staff_id", "order_id", "status", "created_at"]
+    },
+    "enums": {
+      "staff_role": ["store_manager", "shift_supervisor", "senior_picker", "picker", "packer", "bike_rider_intern", "ops_executive", "security_guard", "housekeeping"],
+      "staff_status": ["active", "on_leave", "suspended", "resigned", "terminated"],
+      "shift_type": ["morning", "afternoon", "night", "split"],
+      "attendance_status": ["present", "absent", "half_day", "late", "early_leave", "on_leave_approved", "on_leave_unapproved"],
+      "task_type": ["pick_order", "pack_order", "stock_replenishment", "stock_count", "qc_check", "return_processing", "cleaning", "dispatch"],
+      "task_status": ["pending", "in_progress", "completed", "skipped", "failed"],
+      "leave_type": ["casual", "sick", "privilege", "compensatory", "unpaid"],
+      "employment_type": ["full_time", "part_time", "contract", "on_demand_gig"]
+    },
+    "constraints": [
+      "employee_code UNIQUE NOT NULL",
+      "aadhaar_hash UNIQUE NOT NULL",
+      "dark_store_id FK -> dark_stores.store_id",
+      "One attendance record per staff per date"
+    ]
+  },
+
+  "store_staff": [
+    {
+      "staff_id": "stf_picker_emp_001",
+      "employee_code": "ZIPK-NSC62-PKR-001",
+      "dark_store_id": "ds_noida_sec62",
+      "dark_store_name": "Zipkart - Noida Sector 62",
+
+      "first_name": "Suresh",
+      "last_name": "Yadav",
+      "display_name": "Suresh Yadav",
+      "phone": "9999902001",
+      "emergency_contact_phone": "9999902002",
+      "email": "suresh.yadav@zipkart.internal",
+      "date_of_birth": "1998-06-15",
+      "gender": "M",
+      "profile_photo_url": "https://zipkart-staff.s3.ap-south-1.amazonaws.com/staff/stf_picker_001/photo.jpg",
+
+      "role": "picker",
+      "employment_type": "full_time",
+      "status": "active",
+
+      "aadhaar_masked": "XXXX-XXXX-2345",
+      "aadhaar_hash": "sha256_aadhar_2345",
+      "pan_masked": "ABCPY5678Z",
+      "pan_hash": "sha256_pan_5678",
+
+      "address": {
+        "street": "Room 5, JJ Colony",
+        "area": "Sector 60",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301"
+      },
+
+      "date_of_joining": "2024-02-01",
+      "probation_end_date": "2024-04-30",
+      "confirmed": true,
+      "confirmed_on": "2024-05-01",
+
+      "shift_preference": "morning",
+      "weekly_off_day": "sunday",
+      "max_hours_per_week": 48,
+
+      "bank_account": {
+        "account_holder": "Suresh Yadav",
+        "bank_name": "Punjab National Bank",
+        "account_number_masked": "XXXXXX8901",
+        "ifsc_code": "PUNB0012345",
+        "account_type": "savings"
+      },
+      "upi_id": "suresh.yadav1@ybl",
+      "pf_account_number": "DL/NOIDA/0042/001234",
+      "esi_number": "52-00-12345-0000001",
+
+      "base_salary_monthly": 18000.0,
+      "incentive_structure": {
+        "per_order_picked_above_target": 2.0,
+        "daily_target_orders": 80,
+        "accuracy_bonus_monthly": 500.0,
+        "attendance_bonus_monthly": 300.0
+      },
+
+      "performance_today": {
+        "orders_picked": 72,
+        "picking_accuracy_pct": 99.2,
+        "avg_pick_time_minutes": 3.8,
+        "tasks_completed": 72,
+        "tasks_failed": 1
+      },
+
+      "performance_lifetime": {
+        "total_orders_picked": 28400,
+        "avg_daily_orders": 82.4,
+        "avg_accuracy_pct": 99.1,
+        "total_errors": 25,
+        "attendance_rate_pct": 97.2,
+        "warnings_count": 1,
+        "awards_count": 2
+      },
+
+      "is_active": true,
+      "last_seen_at": "2026-06-07T11:00:00.000Z",
+      "created_by": "adm_store_manager_01",
+      "created_at": "2024-02-01T09:00:00.000Z",
+      "updated_at": "2026-06-07T09:00:00.000Z",
+      "version": 18
+    }
+  ],
+
+  "staff_shifts": [
+    {
+      "shift_id": "shift_stf_001_20260607",
+      "staff_id": "stf_picker_emp_001",
+      "dark_store_id": "ds_noida_sec62",
+      "shift_date": "2026-06-07",
+      "shift_type": "morning",
+      "scheduled_start": "2026-06-07T06:00:00.000Z",
+      "scheduled_end": "2026-06-07T14:00:00.000Z",
+      "scheduled_hours": 8,
+      "status": "completed",
+      "actual_start": "2026-06-07T05:58:00.000Z",
+      "actual_end": "2026-06-07T14:05:00.000Z",
+      "actual_hours": 8.12,
+      "overtime_hours": 0.12,
+      "break_taken_minutes": 30,
+      "supervisor_id": "stf_supervisor_002",
+      "created_by": "adm_store_manager_01",
+      "created_at": "2026-06-06T20:00:00.000Z"
+    }
+  ],
+
+  "staff_attendance": [
+    {
+      "attendance_id": "att_stf_001_20260607",
+      "staff_id": "stf_picker_emp_001",
+      "dark_store_id": "ds_noida_sec62",
+      "attendance_date": "2026-06-07",
+      "status": "present",
+      "check_in_time": "2026-06-07T05:58:00.000Z",
+      "check_out_time": "2026-06-07T14:05:00.000Z",
+      "check_in_method": "biometric",
+      "check_in_device_id": "bio_device_ds_noida_01",
+      "hours_worked": 8.12,
+      "is_late": false,
+      "late_by_minutes": 0,
+      "early_leave": false,
+      "overtime_approved": true,
+      "overtime_hours": 0.12,
+      "leave_type": null,
+      "leave_request_id": null,
+      "geo_check_in_lat": 28.6139,
+      "geo_check_in_lng": 77.2090,
+      "created_at": "2026-06-07T05:58:00.000Z",
+      "updated_at": "2026-06-07T14:05:00.000Z"
+    }
+  ],
+
+  "staff_tasks": [
+    {
+      "task_id": "tsk_pick_order_001",
+      "staff_id": "stf_picker_emp_001",
+      "dark_store_id": "ds_noida_sec62",
+      "task_type": "pick_order",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "order_display_id": "ORD-2026-001-ABC",
+      "status": "completed",
+      "priority": "high",
+      "assigned_at": "2026-06-06T21:15:00.000Z",
+      "started_at": "2026-06-06T21:15:30.000Z",
+      "completed_at": "2026-06-06T21:18:15.000Z",
+      "time_taken_seconds": 165,
+      "target_time_seconds": 180,
+      "was_on_time": true,
+      "items_to_pick": 5,
+      "items_picked_correctly": 4,
+      "items_missed": 1,
+      "items_substituted": 0,
+      "picking_accuracy": 80.0,
+      "errors": [
+        {
+          "item_sku": "LAY-CLX-75G",
+          "error_type": "item_not_picked",
+          "reason": "shelf_empty_not_reported"
+        }
+      ],
+      "created_at": "2026-06-06T21:15:00.000Z"
+    }
+  ],
+
+  "staff_performance_snapshot": {
+    "snapshot_id": "sps_stf_001_june_2026",
+    "staff_id": "stf_picker_emp_001",
+    "dark_store_id": "ds_noida_sec62",
+    "period": "2026-06",
+    "period_type": "monthly",
+    "total_shifts": 24,
+    "total_hours_worked": 192.5,
+    "attendance_rate_pct": 96.0,
+    "late_arrivals": 1,
+    "total_tasks": 1920,
+    "tasks_completed": 1908,
+    "task_completion_rate_pct": 99.375,
+    "orders_picked": 1850,
+    "avg_daily_orders": 77.1,
+    "picking_accuracy_pct": 99.08,
+    "avg_pick_time_minutes": 3.82,
+    "total_errors": 17,
+    "warnings_issued": 0,
+    "incentive_earned": 2240.0,
+    "attendance_bonus": 300.0,
+    "total_incentives": 2540.0,
+    "performance_rating": "excellent",
+    "created_at": "2026-07-01T00:00:00.000Z"
+  }
+}

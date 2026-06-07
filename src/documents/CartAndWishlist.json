@@ -1,0 +1,275 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["carts", "cart_items", "wishlists", "wishlist_items", "saved_for_later"],
+    "description": "Manages the active shopping cart, saved wishlists, and 'saved for later' items for each user. One active cart per user per delivery address context.",
+    "primary_keys": {
+      "carts": "cart_id",
+      "cart_items": "cart_item_id",
+      "wishlists": "wishlist_id",
+      "wishlist_items": "wishlist_item_id",
+      "saved_for_later": "saved_item_id"
+    },
+    "indexes": {
+      "carts": [
+        "user_id (UNIQUE active cart per user)",
+        "status",
+        "dark_store_id",
+        "expires_at",
+        "updated_at"
+      ],
+      "cart_items": [
+        "cart_id",
+        "product_id",
+        "variant_id",
+        "composite: (cart_id, variant_id) UNIQUE"
+      ],
+      "wishlists": [
+        "user_id",
+        "is_default"
+      ],
+      "wishlist_items": [
+        "wishlist_id",
+        "product_id",
+        "composite: (wishlist_id, variant_id) UNIQUE"
+      ]
+    },
+    "enums": {
+      "cart_status": ["active", "abandoned", "converted_to_order", "expired", "merged"],
+      "cart_item_availability": ["available", "out_of_stock", "price_changed", "removed_from_catalog", "quantity_reduced"],
+      "saved_for_later_status": ["available", "out_of_stock", "price_changed"]
+    },
+    "constraints": [
+      "One active cart per user_id (status = active) — enforced via unique partial index",
+      "cart_id FK -> carts.cart_id",
+      "user_id FK -> users.user_id",
+      "dark_store_id FK -> dark_stores.store_id",
+      "variant_id FK -> product_variants.variant_id",
+      "wishlist_id FK -> wishlists.wishlist_id"
+    ],
+    "business_rules": [
+      "Cart is locked to a dark_store_id determined by user's selected delivery address",
+      "If dark store changes, cart items are re-validated for availability",
+      "Cart auto-expires after 7 days of inactivity",
+      "Max 50 unique items per cart",
+      "Price snapshot is taken at add-to-cart time; stale prices are flagged on checkout"
+    ]
+  },
+
+  "cart": {
+    "cart_id": "cart_3f7a8b2c_live",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "session_id": "sess_guest_or_logged_in_abc123",
+    "is_guest_cart": false,
+
+    "dark_store_id": "ds_noida_sec62",
+    "dark_store_name": "Zipkart - Noida Sector 62",
+    "delivery_address_id": "a1b2c3d4-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+    "delivery_pincode": "201301",
+
+    "status": "active",
+    "items_count": 3,
+    "unique_items_count": 3,
+    "total_quantity": 5,
+
+    "subtotal": 283.0,
+    "delivery_fee_estimate": 25.0,
+    "packaging_fee_estimate": 5.0,
+    "surge_fee_estimate": 0.0,
+    "total_discount": 0.0,
+    "estimated_total": 313.0,
+
+    "applied_coupon_id": null,
+    "applied_coupon_code": null,
+    "coupon_discount_estimate": 0.0,
+    "wallet_balance_available": 245.75,
+    "wallet_amount_to_apply": 0.0,
+
+    "has_out_of_stock_items": false,
+    "has_price_changed_items": false,
+    "has_quantity_reduced_items": false,
+    "requires_revalidation": false,
+    "last_validated_at": "2026-06-07T12:00:00.000Z",
+
+    "source": "app_android",
+    "device_platform": "android",
+    "app_version": "4.7.2",
+
+    "created_at": "2026-06-07T11:50:00.000Z",
+    "updated_at": "2026-06-07T12:00:00.000Z",
+    "expires_at": "2026-06-14T11:50:00.000Z",
+    "converted_to_order_id": null,
+    "abandoned_at": null,
+    "abandoned_recovery_email_sent": false,
+    "abandoned_recovery_push_sent": false
+  },
+
+  "cart_items": [
+    {
+      "cart_item_id": "ci_001_milk",
+      "cart_id": "cart_3f7a8b2c_live",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "sku": "AMK-GOLD-1L-001",
+      "product_name": "Amul Gold Full Cream Milk 1L",
+      "product_image_url": "https://cdn.zipkart.com/products/amul_gold_milk_1l_front.jpg",
+      "brand": "Amul",
+      "category": "Dairy & Eggs",
+
+      "quantity": 2,
+      "min_order_qty": 1,
+      "max_order_qty": 5,
+
+      "mrp_at_add": 72.0,
+      "selling_price_at_add": 68.0,
+      "current_mrp": 72.0,
+      "current_selling_price": 68.0,
+      "price_changed": false,
+      "price_change_delta": 0.0,
+
+      "line_total": 136.0,
+      "discount_per_unit": 4.0,
+      "line_discount": 8.0,
+      "gst_rate_pct": 5.0,
+
+      "availability": "available",
+      "current_stock": 507,
+      "is_flash_sale_item": false,
+      "flash_sale_id": null,
+      "flash_sale_price": null,
+      "flash_sale_max_per_user": null,
+
+      "added_from": "search",
+      "added_at": "2026-06-07T11:50:00.000Z",
+      "updated_at": "2026-06-07T11:55:00.000Z"
+    },
+    {
+      "cart_item_id": "ci_002_bread",
+      "cart_id": "cart_3f7a8b2c_live",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "product_id": "prod_britannia_bread_400g",
+      "variant_id": "var_britannia_bread_400g_wht",
+      "sku": "BRIT-BREAD-400G-WHT",
+      "product_name": "Britannia Premium Bread White 400g",
+      "product_image_url": "https://cdn.zipkart.com/products/brit_bread_400g.jpg",
+      "brand": "Britannia",
+      "category": "Bakery & Breads",
+
+      "quantity": 1,
+      "min_order_qty": 1,
+      "max_order_qty": 5,
+
+      "mrp_at_add": 50.0,
+      "selling_price_at_add": 45.0,
+      "current_mrp": 50.0,
+      "current_selling_price": 48.0,
+      "price_changed": true,
+      "price_change_delta": 3.0,
+
+      "line_total": 48.0,
+      "discount_per_unit": 2.0,
+      "line_discount": 2.0,
+      "gst_rate_pct": 18.0,
+
+      "availability": "available",
+      "current_stock": 120,
+      "is_flash_sale_item": false,
+      "flash_sale_id": null,
+      "flash_sale_price": null,
+      "flash_sale_max_per_user": null,
+
+      "added_from": "category_browse",
+      "added_at": "2026-06-07T11:52:00.000Z",
+      "updated_at": "2026-06-07T11:52:00.000Z"
+    },
+    {
+      "cart_item_id": "ci_003_eggs",
+      "cart_id": "cart_3f7a8b2c_live",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "product_id": "prod_nandini_eggs_6pk",
+      "variant_id": "var_nandini_eggs_6pk_std",
+      "sku": "EGGS-6PK-BRWN",
+      "product_name": "Farm Fresh Brown Eggs 6-Pack",
+      "product_image_url": "https://cdn.zipkart.com/products/eggs_6pk.jpg",
+      "brand": "Farm Fresh",
+      "category": "Dairy & Eggs",
+
+      "quantity": 2,
+      "min_order_qty": 1,
+      "max_order_qty": 10,
+
+      "mrp_at_add": 55.0,
+      "selling_price_at_add": 49.5,
+      "current_mrp": 55.0,
+      "current_selling_price": 49.5,
+      "price_changed": false,
+      "price_change_delta": 0.0,
+
+      "line_total": 99.0,
+      "discount_per_unit": 5.5,
+      "line_discount": 11.0,
+      "gst_rate_pct": 0.0,
+
+      "availability": "available",
+      "current_stock": 88,
+      "is_flash_sale_item": false,
+      "flash_sale_id": null,
+
+      "added_from": "recommendations",
+      "added_at": "2026-06-07T11:58:00.000Z",
+      "updated_at": "2026-06-07T11:58:00.000Z"
+    }
+  ],
+
+  "wishlist": {
+    "wishlist_id": "wl_3f7a8b2c_default",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "name": "My Wishlist",
+    "is_default": true,
+    "is_public": false,
+    "share_token": null,
+    "items_count": 4,
+    "created_at": "2025-11-20T14:00:00.000Z",
+    "updated_at": "2026-06-05T10:00:00.000Z"
+  },
+
+  "wishlist_items": [
+    {
+      "wishlist_item_id": "wi_001",
+      "wishlist_id": "wl_3f7a8b2c_default",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "product_id": "prod_horlicks_500g",
+      "variant_id": "var_horlicks_500g_classic",
+      "sku": "HORL-500G-CLX",
+      "product_name": "Horlicks Original Malt 500g",
+      "product_image_url": "https://cdn.zipkart.com/products/horlicks_500g.jpg",
+      "current_mrp": 270.0,
+      "current_selling_price": 245.0,
+      "is_available": true,
+      "current_stock": 45,
+      "price_drop_alert_enabled": true,
+      "price_at_wishlist": 260.0,
+      "price_dropped": true,
+      "added_at": "2026-05-01T10:00:00.000Z"
+    }
+  ],
+
+  "saved_for_later": [
+    {
+      "saved_item_id": "sfl_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "cart_id": "cart_3f7a8b2c_live",
+      "product_id": "prod_lay_chips_classic_26g",
+      "variant_id": "var_lay_chips_26g_classic",
+      "sku": "LAY-CLX-26G",
+      "product_name": "Lay's Classic Salted 26g",
+      "product_image_url": "https://cdn.zipkart.com/products/lays_classic_26g.jpg",
+      "quantity": 3,
+      "selling_price_at_save": 10.0,
+      "current_selling_price": 10.0,
+      "is_available": true,
+      "status": "available",
+      "saved_at": "2026-06-06T20:00:00.000Z"
+    }
+  ]
+}

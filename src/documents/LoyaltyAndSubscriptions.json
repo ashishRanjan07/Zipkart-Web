@@ -1,0 +1,314 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["loyalty_tier_configs", "loyalty_points_ledger", "subscription_plans", "user_subscriptions"],
+    "description": "Manages the loyalty tier system (points accumulation, tier upgrades), and premium subscription plans (Zipkart Plus / Pro).",
+    "primary_keys": {
+      "loyalty_tier_configs": "tier_id",
+      "loyalty_points_ledger": "ledger_id",
+      "subscription_plans": "plan_id",
+      "user_subscriptions": "subscription_id"
+    },
+    "indexes": {
+      "loyalty_points_ledger": [
+        "user_id",
+        "transaction_type",
+        "reference_id",
+        "created_at (DESC)",
+        "is_expired",
+        "expires_at"
+      ],
+      "user_subscriptions": [
+        "user_id",
+        "plan_id",
+        "status",
+        "current_period_end"
+      ]
+    },
+    "enums": {
+      "tier": ["bronze", "silver", "gold", "platinum", "vip"],
+      "points_transaction_type": [
+        "earned_order",
+        "earned_review",
+        "earned_referral",
+        "earned_signup_bonus",
+        "earned_survey",
+        "earned_admin_credit",
+        "redeemed_order_discount",
+        "redeemed_free_delivery",
+        "expired",
+        "reversed_cancelled_order",
+        "admin_debit"
+      ],
+      "subscription_status": ["trialing", "active", "past_due", "cancelled", "expired", "paused"],
+      "subscription_plan_interval": ["monthly", "quarterly", "half_yearly", "annual"],
+      "benefit_type": ["free_delivery", "cashback_pct", "priority_support", "early_flash_sale_access", "exclusive_coupons", "no_surge_fee"]
+    },
+    "constraints": [
+      "points cannot go negative (floor at 0)",
+      "tier downgrades happen at the end of assessment period, not immediately",
+      "Only one active subscription per user at a time"
+    ]
+  },
+
+  "loyalty_tier_configs": [
+    {
+      "tier_id": "tier_bronze",
+      "tier_name": "Bronze",
+      "tier_code": "BRONZE",
+      "tier_level": 1,
+      "min_points": 0,
+      "max_points": 999,
+      "min_lifetime_gmv": 0.0,
+      "points_per_100_inr_spent": 5,
+      "points_validity_days": 180,
+      "color_hex": "#CD7F32",
+      "badge_icon_url": "https://cdn.zipkart.com/loyalty/badges/bronze.svg",
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Free delivery on orders above Rs.199", "value": 199.0 }
+      ],
+      "upgrade_message": "Earn 1000 points to unlock Silver benefits!",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "tier_id": "tier_silver",
+      "tier_name": "Silver",
+      "tier_code": "SILVER",
+      "tier_level": 2,
+      "min_points": 1000,
+      "max_points": 4999,
+      "min_lifetime_gmv": 2000.0,
+      "points_per_100_inr_spent": 8,
+      "points_validity_days": 270,
+      "color_hex": "#C0C0C0",
+      "badge_icon_url": "https://cdn.zipkart.com/loyalty/badges/silver.svg",
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Free delivery on orders above Rs.149", "value": 149.0 },
+        { "benefit_type": "cashback_pct", "description": "1% extra cashback to wallet on every order", "value": 1.0 }
+      ],
+      "upgrade_message": "Earn 5000 points to unlock Gold benefits!",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "tier_id": "tier_gold",
+      "tier_name": "Gold",
+      "tier_code": "GOLD",
+      "tier_level": 3,
+      "min_points": 5000,
+      "max_points": 14999,
+      "min_lifetime_gmv": 10000.0,
+      "points_per_100_inr_spent": 12,
+      "points_validity_days": 365,
+      "color_hex": "#FFD700",
+      "badge_icon_url": "https://cdn.zipkart.com/loyalty/badges/gold.svg",
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Free delivery on orders above Rs.99", "value": 99.0 },
+        { "benefit_type": "cashback_pct", "description": "2% extra cashback to wallet on every order", "value": 2.0 },
+        { "benefit_type": "early_flash_sale_access", "description": "15-minute early access to flash sales", "value": 15 },
+        { "benefit_type": "priority_support", "description": "Priority customer support queue", "value": null }
+      ],
+      "upgrade_message": "Earn 15000 points to unlock Platinum!",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "tier_id": "tier_platinum",
+      "tier_name": "Platinum",
+      "tier_code": "PLATINUM",
+      "tier_level": 4,
+      "min_points": 15000,
+      "max_points": 49999,
+      "min_lifetime_gmv": 30000.0,
+      "points_per_100_inr_spent": 18,
+      "points_validity_days": 365,
+      "color_hex": "#E5E4E2",
+      "badge_icon_url": "https://cdn.zipkart.com/loyalty/badges/platinum.svg",
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Always free delivery (no minimum)", "value": 0.0 },
+        { "benefit_type": "cashback_pct", "description": "3% extra cashback to wallet on every order", "value": 3.0 },
+        { "benefit_type": "early_flash_sale_access", "description": "30-minute early access to flash sales", "value": 30 },
+        { "benefit_type": "no_surge_fee", "description": "No surge fee during peak hours", "value": null },
+        { "benefit_type": "priority_support", "description": "Dedicated support with 1-hour SLA", "value": null },
+        { "benefit_type": "exclusive_coupons", "description": "Monthly Platinum-exclusive coupon pack", "value": null }
+      ],
+      "upgrade_message": "50000 points to reach VIP status!",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    },
+    {
+      "tier_id": "tier_vip",
+      "tier_name": "VIP",
+      "tier_code": "VIP",
+      "tier_level": 5,
+      "min_points": 50000,
+      "max_points": null,
+      "min_lifetime_gmv": 100000.0,
+      "points_per_100_inr_spent": 25,
+      "points_validity_days": 730,
+      "color_hex": "#9B30FF",
+      "badge_icon_url": "https://cdn.zipkart.com/loyalty/badges/vip.svg",
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Always free delivery + free packaging", "value": 0.0 },
+        { "benefit_type": "cashback_pct", "description": "5% cashback to wallet on every order", "value": 5.0 },
+        { "benefit_type": "early_flash_sale_access", "description": "60-minute early access + exclusive VIP-only flash sales", "value": 60 },
+        { "benefit_type": "no_surge_fee", "description": "No surge fee ever", "value": null },
+        { "benefit_type": "priority_support", "description": "Dedicated account manager", "value": null },
+        { "benefit_type": "exclusive_coupons", "description": "Weekly VIP coupon pack + birthday bonus", "value": null }
+      ],
+      "upgrade_message": "You've reached the highest tier! Enjoy exclusive VIP perks.",
+      "is_active": true,
+      "created_at": "2024-01-01T00:00:00.000Z"
+    }
+  ],
+
+  "loyalty_points_ledger": [
+    {
+      "ledger_id": "lpl_001_order_earn",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "transaction_type": "earned_order",
+      "points": 57,
+      "balance_before": 2788,
+      "balance_after": 2845,
+      "reference_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "reference_type": "order",
+      "description": "Points earned for order ORD-2026-001-ABC (Rs.475.50 x 12 pts/Rs.100)",
+      "tier_at_transaction": "gold",
+      "earning_rate": 12,
+      "is_bonus": false,
+      "expires_at": "2027-06-06T23:59:59.000Z",
+      "is_expired": false,
+      "admin_id": null,
+      "admin_note": null,
+      "created_at": "2026-06-06T21:25:00.000Z"
+    },
+    {
+      "ledger_id": "lpl_002_redeem",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "transaction_type": "redeemed_order_discount",
+      "points": -200,
+      "balance_before": 2845,
+      "balance_after": 2645,
+      "reference_id": "ord_redemption_xyz",
+      "reference_type": "order",
+      "description": "200 points redeemed for Rs.20 discount on order ORD-2026-XYZ",
+      "tier_at_transaction": "gold",
+      "earning_rate": null,
+      "is_bonus": false,
+      "expires_at": null,
+      "is_expired": false,
+      "admin_id": null,
+      "admin_note": null,
+      "created_at": "2026-05-20T15:00:00.000Z"
+    },
+    {
+      "ledger_id": "lpl_003_signup_bonus",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "transaction_type": "earned_signup_bonus",
+      "points": 100,
+      "balance_before": 0,
+      "balance_after": 100,
+      "reference_id": null,
+      "reference_type": "signup",
+      "description": "Welcome bonus — 100 points on signup",
+      "tier_at_transaction": "bronze",
+      "is_bonus": true,
+      "expires_at": "2026-05-15T23:59:59.000Z",
+      "is_expired": true,
+      "admin_id": null,
+      "admin_note": null,
+      "created_at": "2025-11-15T08:31:00.000Z"
+    }
+  ],
+
+  "subscription_plans": [
+    {
+      "plan_id": "plan_zipkart_plus_monthly",
+      "plan_name": "Zipkart Plus",
+      "plan_code": "ZKPLUS_M",
+      "tagline": "Free delivery always. Save more every order.",
+      "description": "Get unlimited free delivery, 5% cashback on every order, and no surge fees — all for a flat monthly fee.",
+      "plan_interval": "monthly",
+      "interval_count": 1,
+      "price_inr": 99.0,
+      "price_before_discount_inr": 149.0,
+      "trial_days": 0,
+      "is_active": true,
+      "is_featured": true,
+      "display_order": 1,
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Unlimited free delivery on all orders", "value": 0.0 },
+        { "benefit_type": "cashback_pct", "description": "5% cashback to Zipkart wallet on every order", "value": 5.0 },
+        { "benefit_type": "no_surge_fee", "description": "Zero surge fee during peak hours", "value": null },
+        { "benefit_type": "priority_support", "description": "Priority support with 2-hour response SLA", "value": null }
+      ],
+      "terms_url": "https://www.zipkart.com/terms/plus",
+      "created_at": "2024-06-01T00:00:00.000Z",
+      "updated_at": "2026-01-01T00:00:00.000Z"
+    },
+    {
+      "plan_id": "plan_zipkart_plus_annual",
+      "plan_name": "Zipkart Plus Annual",
+      "plan_code": "ZKPLUS_A",
+      "tagline": "Save Rs.490 vs monthly. Best value!",
+      "description": "All Plus benefits for the whole year at a massive discount.",
+      "plan_interval": "annual",
+      "interval_count": 1,
+      "price_inr": 699.0,
+      "price_before_discount_inr": 1188.0,
+      "trial_days": 7,
+      "is_active": true,
+      "is_featured": false,
+      "display_order": 2,
+      "benefits": [
+        { "benefit_type": "free_delivery", "description": "Unlimited free delivery on all orders", "value": 0.0 },
+        { "benefit_type": "cashback_pct", "description": "5% cashback to Zipkart wallet on every order", "value": 5.0 },
+        { "benefit_type": "no_surge_fee", "description": "Zero surge fee during peak hours", "value": null },
+        { "benefit_type": "priority_support", "description": "Priority support with 1-hour response SLA", "value": null },
+        { "benefit_type": "exclusive_coupons", "description": "Quarterly exclusive coupon pack worth Rs.500", "value": 500.0 }
+      ],
+      "terms_url": "https://www.zipkart.com/terms/plus",
+      "created_at": "2024-06-01T00:00:00.000Z",
+      "updated_at": "2026-01-01T00:00:00.000Z"
+    }
+  ],
+
+  "user_subscription": {
+    "subscription_id": "sub_3f7a8b2c_001",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "plan_id": "plan_zipkart_plus_monthly",
+    "plan_name": "Zipkart Plus",
+
+    "status": "active",
+    "is_trialing": false,
+    "trial_ends_at": null,
+
+    "current_period_start": "2026-06-01T00:00:00.000Z",
+    "current_period_end": "2026-06-30T23:59:59.000Z",
+    "auto_renew": true,
+    "next_billing_date": "2026-07-01T00:00:00.000Z",
+    "next_billing_amount": 99.0,
+
+    "amount_paid": 99.0,
+    "payment_method_id": "p2q3r4s5-6t7u-8v9w-0x1y-2z3a4b5c6d7e",
+    "last_payment_transaction_id": "txn_sub_001_jun2026",
+    "last_payment_at": "2026-06-01T00:00:00.000Z",
+    "last_payment_failed": false,
+    "payment_failure_count": 0,
+
+    "cancelled_at": null,
+    "cancellation_reason": null,
+    "pause_requested": false,
+    "paused_at": null,
+    "paused_until": null,
+
+    "total_orders_with_benefit": 12,
+    "total_delivery_fee_saved": 300.0,
+    "total_cashback_earned": 120.21,
+    "total_surge_fee_saved": 0.0,
+
+    "started_at": "2026-01-01T00:00:00.000Z",
+    "created_at": "2026-01-01T00:00:00.000Z",
+    "updated_at": "2026-06-01T00:00:00.000Z"
+  }
+}

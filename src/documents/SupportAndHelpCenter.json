@@ -1,0 +1,218 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["support_tickets", "ticket_messages", "support_categories", "faq_articles", "ticket_escalations", "csat_surveys"],
+    "description": "Full customer support system — ticket lifecycle, threaded messaging, FAQ knowledge base, escalation chains, and post-resolution CSAT surveys.",
+    "primary_keys": {
+      "support_tickets": "ticket_id",
+      "ticket_messages": "message_id",
+      "support_categories": "category_id",
+      "faq_articles": "article_id",
+      "ticket_escalations": "escalation_id",
+      "csat_surveys": "survey_id"
+    },
+    "indexes": {
+      "support_tickets": [
+        "ticket_display_id (UNIQUE)",
+        "user_id",
+        "order_id",
+        "status",
+        "priority",
+        "assigned_to_admin_id",
+        "created_at (DESC)",
+        "sla_breach_at",
+        "composite: (status, priority, created_at)"
+      ],
+      "faq_articles": [
+        "category_id",
+        "is_active",
+        "view_count (DESC)"
+      ]
+    },
+    "enums": {
+      "ticket_status": ["open", "in_progress", "waiting_for_customer", "escalated", "resolved", "closed", "reopened"],
+      "ticket_priority": ["low", "medium", "high", "critical"],
+      "ticket_channel": ["app", "web", "email", "phone", "whatsapp", "social_media", "admin_raised"],
+      "ticket_category": ["order_issue", "payment_issue", "delivery_issue", "product_quality", "refund_request", "account_issue", "coupon_issue", "app_bug", "feedback", "other"],
+      "message_sender_type": ["user", "support_agent", "system_bot", "admin"],
+      "escalation_reason": ["sla_breach", "customer_escalation", "repeat_issue", "fraud_suspected", "high_value_customer", "legal_threat", "media_mention"],
+      "resolution_type": ["refund_given", "replacement_sent", "coupon_given", "explanation_provided", "account_fixed", "no_action_required", "escalated_to_ops"]
+    },
+    "sla_config": {
+      "critical": { "first_response_minutes": 15, "resolution_hours": 4 },
+      "high": { "first_response_minutes": 30, "resolution_hours": 8 },
+      "medium": { "first_response_minutes": 60, "resolution_hours": 24 },
+      "low": { "first_response_minutes": 240, "resolution_hours": 72 }
+    }
+  },
+
+  "support_categories": [
+    { "category_id": "sc_order_issue", "name": "Order Issue", "slug": "order-issue", "icon": "package", "sort_order": 1, "is_active": true, "sub_categories": ["missing_item", "wrong_item", "damaged_item", "order_not_delivered", "order_cancelled_incorrectly"] },
+    { "category_id": "sc_payment", "name": "Payment & Refund", "slug": "payment-refund", "icon": "credit-card", "sort_order": 2, "is_active": true, "sub_categories": ["refund_not_received", "double_charge", "payment_failed", "wallet_issue", "coupon_not_applied"] },
+    { "category_id": "sc_delivery", "name": "Delivery Issue", "slug": "delivery-issue", "icon": "truck", "sort_order": 3, "is_active": true, "sub_categories": ["delivery_late", "delivery_attempt_missed", "partner_behavior", "wrong_address_delivery"] },
+    { "category_id": "sc_product_quality", "name": "Product Quality", "slug": "product-quality", "icon": "alert-triangle", "sort_order": 4, "is_active": true, "sub_categories": ["expired_product", "damaged_packaging", "near_expiry", "quality_not_as_expected"] },
+    { "category_id": "sc_account", "name": "Account & App", "slug": "account-app", "icon": "user", "sort_order": 5, "is_active": true, "sub_categories": ["login_issue", "otp_not_received", "account_blocked", "data_deletion_request", "app_crash"] }
+  ],
+
+  "support_ticket": {
+    "ticket_id": "tkt_2026_78901",
+    "ticket_display_id": "TKT-2026-78901",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "customer_name": "Rahul Sharma",
+    "customer_phone_masked": "9876****210",
+    "customer_tier": "gold",
+    "is_high_value_customer": true,
+
+    "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+    "order_display_id": "ORD-2026-001-ABC",
+
+    "channel": "app",
+    "category_id": "sc_order_issue",
+    "sub_category": "missing_item",
+    "subject": "Missing item in my order - Lay's chips not delivered",
+    "description": "I ordered Lay's Classic Chips 75g but it was not in the delivery bag. Please refund or send replacement.",
+
+    "status": "resolved",
+    "priority": "medium",
+    "assigned_to_admin_id": "adm_2a1b3c4d",
+    "assigned_to_admin_name": "Priya Nair",
+    "assigned_at": "2026-06-07T08:35:00.000Z",
+    "team": "tier_1_support",
+
+    "sla_first_response_due": "2026-06-07T09:30:00.000Z",
+    "sla_resolution_due": "2026-06-08T08:30:00.000Z",
+    "first_response_at": "2026-06-07T08:40:00.000Z",
+    "first_response_sla_met": true,
+    "resolution_sla_met": true,
+    "sla_breach": false,
+
+    "resolution_type": "refund_given",
+    "resolution_summary": "Confirmed item missing. Refund of Rs.30 initiated to original payment method.",
+    "refund_id": "ref_tkt_78901",
+    "refund_amount": 30.0,
+    "coupon_given_id": null,
+
+    "csat_score": 5,
+    "csat_feedback": "Very quick response. Happy with resolution!",
+    "csat_collected_at": "2026-06-07T12:00:00.000Z",
+
+    "created_at": "2026-06-07T08:30:00.000Z",
+    "resolved_at": "2026-06-07T08:45:00.000Z",
+    "closed_at": "2026-06-07T11:45:00.000Z",
+    "reopened_at": null,
+    "last_activity_at": "2026-06-07T11:45:00.000Z",
+    "internal_tags": ["verified_missing_item", "refund_processed"],
+    "version": 4
+  },
+
+  "ticket_messages": [
+    {
+      "message_id": "tm_001_user_raise",
+      "ticket_id": "tkt_2026_78901",
+      "sender_type": "user",
+      "sender_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "sender_name": "Rahul Sharma",
+      "message": "I ordered Lay's Classic Chips 75g but it was not in the bag. Please check.",
+      "is_internal_note": false,
+      "attachment_urls": [],
+      "sent_at": "2026-06-07T08:30:00.000Z",
+      "read_at": "2026-06-07T08:35:00.000Z"
+    },
+    {
+      "message_id": "tm_002_agent_response",
+      "ticket_id": "tkt_2026_78901",
+      "sender_type": "support_agent",
+      "sender_id": "adm_2a1b3c4d",
+      "sender_name": "Priya Nair",
+      "message": "Hi Rahul, I'm sorry about the missing item. I've verified your order and confirmed Lay's Chips was not dispatched. I'm initiating a refund of Rs.30 to your original payment method right away. It will reflect in 5 business days.",
+      "is_internal_note": false,
+      "attachment_urls": [],
+      "sent_at": "2026-06-07T08:40:00.000Z",
+      "read_at": "2026-06-07T08:42:00.000Z"
+    },
+    {
+      "message_id": "tm_003_internal_note",
+      "ticket_id": "tkt_2026_78901",
+      "sender_type": "support_agent",
+      "sender_id": "adm_2a1b3c4d",
+      "sender_name": "Priya Nair",
+      "message": "Checked delivery photo — bag seal intact, item not in photo. Flagged picker emp_001 for packing error. Store manager notified.",
+      "is_internal_note": true,
+      "attachment_urls": ["https://zipkart-evidence.s3.ap-south-1.amazonaws.com/delivery_proofs/order_001_delivery.jpg"],
+      "sent_at": "2026-06-07T08:38:00.000Z",
+      "read_at": null
+    },
+    {
+      "message_id": "tm_004_user_reply",
+      "ticket_id": "tkt_2026_78901",
+      "sender_type": "user",
+      "sender_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "sender_name": "Rahul Sharma",
+      "message": "Thank you! That was very quick. Much appreciated.",
+      "is_internal_note": false,
+      "attachment_urls": [],
+      "sent_at": "2026-06-07T08:50:00.000Z",
+      "read_at": "2026-06-07T08:55:00.000Z"
+    }
+  ],
+
+  "ticket_escalation": {
+    "escalation_id": "esc_001",
+    "ticket_id": "tkt_critical_001",
+    "escalation_reason": "high_value_customer",
+    "escalated_from_admin_id": "adm_2a1b3c4d",
+    "escalated_to_admin_id": "adm_9f8a7b6c",
+    "escalated_to_team": "tier_2_ops",
+    "escalation_note": "Platinum user, 3 missing item complaints in 7 days. Needs investigation for fraud or ops failure.",
+    "escalated_at": "2026-06-01T10:00:00.000Z",
+    "resolved_at": null,
+    "resolution_note": null
+  },
+
+  "faq_articles": [
+    {
+      "article_id": "faq_001_refund_timeline",
+      "category_id": "sc_payment",
+      "title": "When will I get my refund?",
+      "slug": "when-will-i-get-my-refund",
+      "content": "Refunds are processed within 24 hours of approval. Timeline by payment method:\n\n- UPI: 1-2 business days\n- Debit/Credit Card: 5-7 business days\n- Net Banking: 3-5 business days\n- Zipkart Wallet: Instant\n- COD: Bank transfer in 5-7 business days\n\nYou'll receive an SMS and email confirmation once processed.",
+      "tags": ["refund", "payment", "money back"],
+      "is_active": true,
+      "is_featured": true,
+      "view_count": 48200,
+      "helpful_count": 38400,
+      "not_helpful_count": 2100,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-03-01T10:00:00.000Z"
+    },
+    {
+      "article_id": "faq_002_cancel_order",
+      "category_id": "sc_order_issue",
+      "title": "How to cancel an order?",
+      "slug": "how-to-cancel-an-order",
+      "content": "You can cancel an order within 60 seconds of placing it through the app:\n\n1. Go to 'My Orders'\n2. Select the order\n3. Tap 'Cancel Order'\n4. Select reason\n\nAfter 60 seconds, contact support. Orders that are out for delivery cannot be cancelled.",
+      "tags": ["cancel", "order", "refund"],
+      "is_active": true,
+      "is_featured": true,
+      "view_count": 92000,
+      "helpful_count": 75000,
+      "not_helpful_count": 3200,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-04-01T10:00:00.000Z"
+    }
+  ],
+
+  "csat_survey": {
+    "survey_id": "csat_tkt_78901",
+    "ticket_id": "tkt_2026_78901",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "agent_id": "adm_2a1b3c4d",
+    "survey_type": "post_resolution",
+    "rating": 5,
+    "comment": "Very quick response. Happy with resolution!",
+    "was_issue_resolved": true,
+    "would_recommend": true,
+    "sent_at": "2026-06-07T11:45:00.000Z",
+    "responded_at": "2026-06-07T12:00:00.000Z",
+    "channel": "in_app"
+  }
+}

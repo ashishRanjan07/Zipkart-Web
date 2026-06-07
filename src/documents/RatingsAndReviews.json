@@ -1,0 +1,244 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["product_reviews", "delivery_partner_reviews", "review_media", "review_helpfulness_votes", "review_moderation_logs"],
+    "description": "Manages customer ratings and reviews for products and delivery partners, including moderation workflow, media attachments, and helpfulness voting.",
+    "primary_keys": {
+      "product_reviews": "review_id",
+      "delivery_partner_reviews": "partner_review_id",
+      "review_media": "media_id",
+      "review_helpfulness_votes": "vote_id",
+      "review_moderation_logs": "moderation_id"
+    },
+    "indexes": {
+      "product_reviews": [
+        "product_id",
+        "user_id",
+        "rating",
+        "status",
+        "is_verified_purchase",
+        "created_at (DESC)",
+        "composite: (user_id, order_item_id) UNIQUE"
+      ],
+      "delivery_partner_reviews": [
+        "partner_id",
+        "user_id",
+        "order_id",
+        "rating",
+        "created_at (DESC)",
+        "composite: (user_id, order_id) UNIQUE"
+      ]
+    },
+    "enums": {
+      "review_status": ["pending_moderation", "approved", "rejected", "flagged", "removed_by_user"],
+      "rejection_reason": ["spam", "fake_review", "abusive_content", "competitor_mention", "irrelevant", "personal_info_shared", "duplicate"],
+      "rating_source": ["post_delivery_prompt", "in_app_review", "email_link", "manual"],
+      "helpfulness_vote": ["helpful", "not_helpful"]
+    },
+    "constraints": [
+      "One product review per user per order_item_id (verified purchase constraint)",
+      "One partner review per user per order_id",
+      "Rating must be between 1.0 and 5.0",
+      "Review text max 2000 characters",
+      "Max 5 media attachments per review"
+    ],
+    "business_rules": [
+      "Only users who ordered the product can leave a verified purchase review",
+      "Unverified reviews allowed but marked separately",
+      "Reviews auto-approved if positive sentiment (>= 4 stars) — negative goes to moderation queue",
+      "Product avg_rating recalculated asynchronously after each new review",
+      "Partner rating updated in real-time on each delivery"
+    ]
+  },
+
+  "product_reviews": [
+    {
+      "review_id": "rev_amk_milk_001",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "order_item_id": "oi_001_milk",
+      "dark_store_id": "ds_noida_sec62",
+
+      "rating": 5.0,
+      "title": "Fresh and good quality!",
+      "body": "Always fresh, proper cold chain maintained. Delivered in 9 minutes, still cold. Amul Gold is the best.",
+      "pros": ["Fresh", "Good taste", "Cold on arrival"],
+      "cons": [],
+
+      "is_verified_purchase": true,
+      "rating_source": "post_delivery_prompt",
+      "platform": "android",
+      "app_version": "4.7.2",
+
+      "status": "approved",
+      "moderation_score": 0.98,
+      "auto_approved": true,
+      "moderated_at": "2026-06-06T21:30:00.000Z",
+      "moderated_by": "system_auto_moderation",
+      "rejection_reason": null,
+
+      "helpful_count": 12,
+      "not_helpful_count": 1,
+      "total_votes": 13,
+      "helpfulness_score": 0.923,
+
+      "seller_response": null,
+      "seller_responded_at": null,
+
+      "is_featured": false,
+      "featured_at": null,
+      "featured_by": null,
+
+      "created_at": "2026-06-06T21:28:00.000Z",
+      "updated_at": "2026-06-06T21:30:00.000Z",
+      "is_deleted": false,
+      "deleted_at": null,
+      "deleted_by": null
+    },
+    {
+      "review_id": "rev_amk_milk_002",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "user_id": "7e2f1a8d-4b3c-4e5f-9a2b-1c3d5e7f9b2a",
+      "order_id": "ord_negative_review_002",
+      "order_item_id": "oi_milk_order_002",
+      "dark_store_id": "ds_gurgaon_sector_30",
+
+      "rating": 2.0,
+      "title": "Milk was sour",
+      "body": "Received milk that smelled slightly sour. Expiry date was next day. Not acceptable for a 1-hour old delivery.",
+      "pros": [],
+      "cons": ["Near expiry", "Quality issue"],
+
+      "is_verified_purchase": true,
+      "rating_source": "post_delivery_prompt",
+      "platform": "ios",
+      "app_version": "4.7.1",
+
+      "status": "approved",
+      "moderation_score": 0.91,
+      "auto_approved": false,
+      "moderated_at": "2026-06-05T10:00:00.000Z",
+      "moderated_by": "adm_2a1b3c4d",
+      "rejection_reason": null,
+
+      "helpful_count": 45,
+      "not_helpful_count": 3,
+      "total_votes": 48,
+      "helpfulness_score": 0.9375,
+
+      "seller_response": "We apologize for the experience. We have flagged this batch for quality review and have improved our cold chain process. Please reach out to support for a replacement.",
+      "seller_responded_at": "2026-06-05T14:00:00.000Z",
+
+      "is_featured": false,
+      "created_at": "2026-06-04T20:00:00.000Z",
+      "updated_at": "2026-06-05T14:00:00.000Z",
+      "is_deleted": false
+    }
+  ],
+
+  "review_media": [
+    {
+      "media_id": "rm_rev_amk_002_photo_01",
+      "review_id": "rev_amk_milk_002",
+      "media_type": "image",
+      "url": "https://zipkart-reviews.s3.ap-south-1.amazonaws.com/reviews/rev_amk_milk_002/photo1.jpg",
+      "thumbnail_url": "https://zipkart-reviews.s3.ap-south-1.amazonaws.com/reviews/rev_amk_milk_002/thumb_photo1.jpg",
+      "file_size_kb": 240,
+      "width_px": 1080,
+      "height_px": 1440,
+      "is_approved": true,
+      "created_at": "2026-06-04T20:01:00.000Z"
+    }
+  ],
+
+  "review_helpfulness_votes": [
+    {
+      "vote_id": "rhv_001",
+      "review_id": "rev_amk_milk_001",
+      "user_id": "8f3g2b4c-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "vote": "helpful",
+      "created_at": "2026-06-07T09:00:00.000Z"
+    }
+  ],
+
+  "delivery_partner_reviews": [
+    {
+      "partner_review_id": "pr_rajesh_order001",
+      "partner_id": "del_rajesh_1423",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "dark_store_id": "ds_noida_sec62",
+
+      "rating": 5.0,
+      "delivery_speed_rating": 5,
+      "behavior_rating": 5,
+      "packaging_rating": 5,
+      "comment": "Super fast delivery! Very polite. Handed over perfectly.",
+      "tags": ["fast_delivery", "polite", "professional"],
+
+      "delivery_time_minutes": 9,
+      "was_on_time": true,
+
+      "is_verified": true,
+      "status": "approved",
+      "created_at": "2026-06-06T21:26:00.000Z"
+    },
+    {
+      "partner_review_id": "pr_rajesh_order_bad_001",
+      "partner_id": "del_rajesh_1423",
+      "user_id": "9a8b7c6d-5e4f-3a2b-1c0d-9e8f7a6b5c4d",
+      "order_id": "ord_delayed_001",
+      "dark_store_id": "ds_noida_sec62",
+
+      "rating": 2.0,
+      "delivery_speed_rating": 2,
+      "behavior_rating": 4,
+      "packaging_rating": 3,
+      "comment": "Delivery was 18 minutes late. No communication about delay.",
+      "tags": ["late_delivery", "no_communication"],
+
+      "delivery_time_minutes": 28,
+      "was_on_time": false,
+      "sla_breach": true,
+
+      "is_verified": true,
+      "status": "approved",
+      "created_at": "2026-06-01T20:00:00.000Z"
+    }
+  ],
+
+  "review_moderation_logs": [
+    {
+      "moderation_id": "mod_001",
+      "review_id": "rev_amk_milk_002",
+      "action": "approved",
+      "previous_status": "pending_moderation",
+      "new_status": "approved",
+      "moderated_by": "adm_2a1b3c4d",
+      "moderation_note": "Legitimate critical review. Quality concern flagged to ops team.",
+      "auto_flagged_categories": [],
+      "toxicity_score": 0.02,
+      "spam_score": 0.01,
+      "created_at": "2026-06-05T10:00:00.000Z"
+    }
+  ],
+
+  "product_rating_summary": {
+    "product_id": "prod_amul_gold_milk_1l",
+    "avg_rating": 4.6,
+    "total_reviews": 1842,
+    "rating_distribution": {
+      "5_star": 1105,
+      "4_star": 460,
+      "3_star": 147,
+      "2_star": 92,
+      "1_star": 38
+    },
+    "verified_purchase_reviews": 1680,
+    "with_photos": 245,
+    "with_text": 1420,
+    "last_computed_at": "2026-06-07T10:00:00.000Z"
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["return_requests", "return_items", "return_pickup_assignments", "complaint_types", "complaint_logs"],
+    "description": "Manages product returns (item pickup + refund workflow) and customer complaints (quality, packaging, service issues) beyond standard refunds.",
+    "primary_keys": {
+      "return_requests": "return_id",
+      "return_items": "return_item_id",
+      "return_pickup_assignments": "pickup_id",
+      "complaint_types": "complaint_type_id",
+      "complaint_logs": "complaint_id"
+    },
+    "indexes": {
+      "return_requests": ["order_id", "user_id", "status", "created_at (DESC)", "dark_store_id"],
+      "return_pickup_assignments": ["return_id", "partner_id", "status"],
+      "complaint_logs": ["order_id", "user_id", "complaint_type_id", "status", "created_at (DESC)"]
+    },
+    "enums": {
+      "return_reason": ["wrong_item_delivered", "damaged_item", "expired_product", "quality_not_acceptable", "missing_quantity_weighed", "different_from_description", "changed_mind"],
+      "return_status": ["requested", "approved", "pickup_scheduled", "pickup_assigned", "picked_up", "received_at_store", "qc_passed", "qc_failed", "refund_initiated", "refund_processed", "rejected", "cancelled"],
+      "return_refund_mode": ["original_payment_method", "wallet"],
+      "qc_result": ["passed", "failed_item_damaged_by_customer", "failed_item_missing", "failed_different_product"],
+      "complaint_severity": ["low", "medium", "high", "critical"],
+      "complaint_status": ["open", "under_investigation", "resolved", "closed", "escalated"],
+      "pickup_status": ["scheduled", "partner_assigned", "partner_en_route", "picked_up", "failed", "cancelled"]
+    },
+    "business_rules": [
+      "Returns accepted within 48 hours of delivery for non-perishables",
+      "Perishables (dairy, fresh produce, frozen): no physical return; refund after photo evidence",
+      "Return pickup is free of charge to the customer",
+      "QC at dark store determines final refund decision",
+      "Refund issued to wallet instantly on QC pass; to original method within 5 days"
+    ]
+  },
+
+  "return_request": {
+    "return_id": "ret_order_abc456",
+    "return_display_id": "RET-2026-06-0012",
+    "order_id": "ord_abc456",
+    "order_display_id": "ORD-2026-ABC456",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "customer_phone_masked": "9876****210",
+    "dark_store_id": "ds_noida_sec62",
+
+    "return_reason": "wrong_item_delivered",
+    "customer_description": "I ordered Amul Taaza Milk but received Amul Slim n Trim which I did not order.",
+    "evidence_photo_urls": [
+      "https://zipkart-evidence.s3.ap-south-1.amazonaws.com/returns/ret_abc456/photo1.jpg",
+      "https://zipkart-evidence.s3.ap-south-1.amazonaws.com/returns/ret_abc456/photo2.jpg"
+    ],
+
+    "status": "pickup_assigned",
+    "is_physical_return_required": true,
+    "is_perishable": false,
+
+    "total_items": 1,
+    "total_return_value": 68.0,
+    "approved_refund_amount": 68.0,
+    "refund_mode": "original_payment_method",
+    "refund_id": null,
+
+    "reviewed_by_admin_id": "adm_2a1b3c4d",
+    "reviewed_at": "2026-06-06T23:00:00.000Z",
+    "review_note": "Customer evidence confirms wrong item. Approved full refund after pickup.",
+    "rejection_reason": null,
+
+    "pickup_deadline": "2026-06-08T21:15:00.000Z",
+    "created_at": "2026-06-06T22:00:00.000Z",
+    "updated_at": "2026-06-07T08:00:00.000Z"
+  },
+
+  "return_items": [
+    {
+      "return_item_id": "ri_001_wrong_milk",
+      "return_id": "ret_order_abc456",
+      "order_item_id": "oi_milk_abc456",
+      "product_id": "prod_amul_taaza_milk_1l",
+      "variant_id": "var_amul_taaza_milk_1l",
+      "sku": "AMK-TAAZA-1L-001",
+      "product_name_ordered": "Amul Taaza Toned Milk 1L",
+      "product_name_received": "Amul Slim n Trim Milk 1L",
+      "quantity_ordered": 1,
+      "quantity_to_return": 1,
+      "unit_price": 68.0,
+      "return_value": 68.0,
+      "return_reason": "wrong_item_delivered",
+      "condition_on_delivery": "sealed",
+      "is_unopened": true,
+      "qc_result": null,
+      "qc_notes": null,
+      "qc_checked_by": null,
+      "qc_checked_at": null,
+      "created_at": "2026-06-06T22:00:00.000Z"
+    }
+  ],
+
+  "return_pickup_assignment": {
+    "pickup_id": "rpick_001",
+    "return_id": "ret_order_abc456",
+    "partner_id": "del_rajesh_1423",
+    "partner_name": "Rajesh Kumar",
+    "partner_code": "BLK-1423",
+    "dark_store_id": "ds_noida_sec62",
+
+    "pickup_address_id": "a1b2c3d4-5e6f-7g8h-9i0j-1k2l3m4n5o6p",
+    "pickup_address_snapshot": {
+      "flat_house_no": "A-403, 4th Floor",
+      "building_name": "Aarohi Apartments",
+      "area": "Sector 62, Noida",
+      "pincode": "201301"
+    },
+
+    "status": "partner_assigned",
+    "assigned_at": "2026-06-07T08:00:00.000Z",
+    "scheduled_pickup_window_start": "2026-06-07T14:00:00.000Z",
+    "scheduled_pickup_window_end": "2026-06-07T18:00:00.000Z",
+    "picked_up_at": null,
+    "delivered_to_store_at": null,
+    "failure_reason": null,
+    "partner_notes": null,
+    "pickup_otp_hash": "$2b$10$pickupOtpHash12345",
+    "pickup_otp_verified": false,
+    "photo_proof_url": null,
+    "created_at": "2026-06-07T08:00:00.000Z"
+  },
+
+  "complaint_types": [
+    { "complaint_type_id": "ct_expired_product", "name": "Expired Product Received", "category": "product_quality", "severity": "high", "auto_refund_eligible": true, "is_active": true },
+    { "complaint_type_id": "ct_packaging_damaged", "name": "Packaging Damaged on Delivery", "category": "product_quality", "severity": "medium", "auto_refund_eligible": false, "is_active": true },
+    { "complaint_type_id": "ct_partner_behavior", "name": "Delivery Partner Misconduct", "category": "delivery_service", "severity": "high", "auto_refund_eligible": false, "is_active": true },
+    { "complaint_type_id": "ct_overcharged", "name": "Overcharged / Incorrect Bill", "category": "billing", "severity": "high", "auto_refund_eligible": true, "is_active": true },
+    { "complaint_type_id": "ct_poor_product_quality", "name": "Product Quality Below Standard", "category": "product_quality", "severity": "medium", "auto_refund_eligible": false, "is_active": true }
+  ],
+
+  "complaint_log": {
+    "complaint_id": "comp_001",
+    "complaint_display_id": "COMP-2026-06-0008",
+    "order_id": "ord_quality_issue_001",
+    "order_item_id": "oi_milk_quality_001",
+    "user_id": "7e2f1a8d-4b3c-4e5f-9a2b-1c3d5e7f9b2a",
+    "dark_store_id": "ds_gurgaon_sector_30",
+    "complaint_type_id": "ct_expired_product",
+    "complaint_type_name": "Expired Product Received",
+    "severity": "high",
+
+    "description": "Received Amul Gold Milk expiring tomorrow. This is unacceptable for same-day delivery.",
+    "evidence_photo_urls": ["https://zipkart-evidence.s3.ap-south-1.amazonaws.com/complaints/comp_001/expiry_label.jpg"],
+
+    "status": "resolved",
+    "assigned_to_admin_id": "adm_2a1b3c4d",
+    "assigned_at": "2026-06-05T10:10:00.000Z",
+    "resolution": "Full refund processed + Rs.50 goodwill coupon issued. Batch flagged for ops review.",
+    "resolution_type": "refund_given",
+    "refund_amount": 68.0,
+    "coupon_given_id": "coup_goodwill_50",
+    "ops_action_taken": "Batch BATCH-AMK-EARLY flagged for expiry check. Picker warned.",
+    "resolved_at": "2026-06-05T10:45:00.000Z",
+    "csat_score": 4,
+
+    "created_at": "2026-06-05T10:00:00.000Z",
+    "updated_at": "2026-06-05T10:45:00.000Z"
+  }
+}

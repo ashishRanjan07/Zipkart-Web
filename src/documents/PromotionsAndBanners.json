@@ -1,0 +1,247 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["promotions", "banners", "homepage_sections", "promotional_slots", "sponsored_products"],
+    "description": "Manages all marketing surfaces — homepage banners, category banners, promotional campaigns that tie flash sales and coupons, sponsored product placements, and in-app interstitials.",
+    "primary_keys": {
+      "promotions": "promotion_id",
+      "banners": "banner_id",
+      "homepage_sections": "section_id",
+      "promotional_slots": "slot_id",
+      "sponsored_products": "sponsorship_id"
+    },
+    "indexes": {
+      "banners": ["status", "placement", "start_at", "end_at", "priority", "composite: (placement, status, priority)"],
+      "homepage_sections": ["status", "display_order"],
+      "promotional_slots": ["dark_store_id", "is_active", "slot_type"],
+      "sponsored_products": ["product_id", "is_active", "start_at", "end_at"]
+    },
+    "enums": {
+      "banner_status": ["draft", "scheduled", "active", "paused", "expired", "archived"],
+      "banner_placement": [
+        "homepage_hero",
+        "homepage_mid",
+        "category_top",
+        "search_top",
+        "cart_page",
+        "order_confirmation",
+        "post_delivery",
+        "checkout_upsell",
+        "app_launch_interstitial",
+        "story_format"
+      ],
+      "promotion_type": ["sale_event", "brand_day", "festival_campaign", "category_offer", "new_user_offer", "referral_campaign"],
+      "click_action": ["open_url", "open_category", "open_product", "open_flash_sale", "open_coupon", "open_collection", "open_brand_page", "open_external_url"],
+      "section_type": ["banner_carousel", "product_grid", "category_strip", "brand_strip", "flash_sale_timer", "recently_ordered", "trending_now", "sponsored"]
+    },
+    "constraints": [
+      "start_at < end_at",
+      "priority >= 1",
+      "Only one active hero banner per placement at a time (enforced via DB unique partial index)"
+    ]
+  },
+
+  "promotions": [
+    {
+      "promotion_id": "promo_june_summer_2026",
+      "promotion_code": "SUMMER2026",
+      "promotion_type": "sale_event",
+      "name": "June Summer Sale 2026",
+      "tagline": "Beat the heat. Save big!",
+      "description": "Up to 50% off on over 1000 products across all categories. Free delivery on all orders.",
+      "status": "active",
+
+      "start_at": "2026-06-01T00:00:00.000Z",
+      "end_at": "2026-06-30T23:59:59.000Z",
+      "timezone": "Asia/Kolkata",
+
+      "linked_coupon_ids": ["coup_flat50_june", "coup_pct15_dairy"],
+      "linked_flash_sale_ids": ["flash_evening_06jun"],
+      "linked_collection_id": "coll_summer_sale_products",
+
+      "theme_color_primary": "#FF6B00",
+      "theme_color_secondary": "#FFD700",
+      "hero_image_url": "https://cdn.zipkart.com/promotions/summer_2026/hero.jpg",
+      "logo_url": "https://cdn.zipkart.com/promotions/summer_2026/logo.svg",
+
+      "applicable_dark_store_ids": ["all"],
+      "applicable_user_segments": ["all"],
+
+      "analytics": {
+        "total_banner_impressions": 1850000,
+        "total_banner_clicks": 142000,
+        "ctr_pct": 7.68,
+        "orders_attributed": 28500,
+        "revenue_attributed": 8550000.0,
+        "coupon_redemptions": 32650
+      },
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-05-20T10:00:00.000Z",
+      "updated_at": "2026-06-01T00:00:00.000Z"
+    }
+  ],
+
+  "banners": [
+    {
+      "banner_id": "bnr_summer_hero_001",
+      "promotion_id": "promo_june_summer_2026",
+      "name": "June Summer Sale - Hero Banner",
+      "placement": "homepage_hero",
+      "status": "active",
+      "priority": 1,
+
+      "image_url_desktop": "https://cdn.zipkart.com/banners/summer_2026/hero_1920x480.jpg",
+      "image_url_mobile": "https://cdn.zipkart.com/banners/summer_2026/hero_375x200.jpg",
+      "image_url_tablet": "https://cdn.zipkart.com/banners/summer_2026/hero_768x300.jpg",
+      "alt_text": "June Summer Sale - Up to 50% OFF!",
+      "title": "Beat the Heat. Save BIG!",
+      "subtitle": "Up to 50% off on 1000+ products",
+      "cta_text": "Shop Now",
+
+      "click_action": "open_collection",
+      "click_target": "coll_summer_sale_products",
+      "deeplink": "zipkart://collection/summer_sale_2026",
+
+      "utm_source": "banner",
+      "utm_medium": "homepage_hero",
+      "utm_campaign": "june_summer_sale_2026",
+
+      "applicable_dark_store_ids": ["all"],
+      "applicable_user_segments": ["all"],
+      "applicable_platforms": ["android", "ios", "web"],
+      "min_app_version": "4.0.0",
+
+      "start_at": "2026-06-01T00:00:00.000Z",
+      "end_at": "2026-06-30T23:59:59.000Z",
+      "timezone": "Asia/Kolkata",
+
+      "analytics": {
+        "impressions": 1850000,
+        "clicks": 142000,
+        "ctr_pct": 7.68
+      },
+
+      "created_by": "adm_7h6g5f4e",
+      "created_at": "2026-05-25T10:00:00.000Z",
+      "updated_at": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "banner_id": "bnr_dairy_category_001",
+      "promotion_id": "promo_june_summer_2026",
+      "name": "Dairy Summer Special - Category Banner",
+      "placement": "category_top",
+      "status": "active",
+      "priority": 1,
+
+      "image_url_mobile": "https://cdn.zipkart.com/banners/dairy_summer_375x120.jpg",
+      "alt_text": "15% off on all Dairy products - Use DAIRY15",
+      "cta_text": "Apply DAIRY15",
+
+      "click_action": "open_coupon",
+      "click_target": "coup_pct15_dairy",
+
+      "applicable_category_ids": ["cat_dairy_eggs"],
+      "applicable_platforms": ["android", "ios"],
+
+      "start_at": "2026-06-01T00:00:00.000Z",
+      "end_at": "2026-06-30T23:59:59.000Z",
+
+      "analytics": { "impressions": 420000, "clicks": 52000, "ctr_pct": 12.38 },
+
+      "created_by": "adm_7h6g5f4e",
+      "created_at": "2026-05-28T10:00:00.000Z",
+      "updated_at": "2026-06-01T00:00:00.000Z"
+    }
+  ],
+
+  "homepage_sections": [
+    {
+      "section_id": "sec_flash_sale_timer",
+      "section_type": "flash_sale_timer",
+      "title": "Flash Sale",
+      "subtitle": "Ends in",
+      "display_order": 1,
+      "is_active": true,
+      "linked_flash_sale_id": "flash_evening_06jun",
+      "visible_when_no_active_sale": false,
+      "platforms": ["android", "ios"],
+      "user_segments": ["all"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "section_id": "sec_hero_carousel",
+      "section_type": "banner_carousel",
+      "title": null,
+      "display_order": 2,
+      "is_active": true,
+      "banner_ids": ["bnr_summer_hero_001"],
+      "auto_scroll": true,
+      "auto_scroll_interval_seconds": 4,
+      "platforms": ["android", "ios", "web"],
+      "user_segments": ["all"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "section_id": "sec_category_strip",
+      "section_type": "category_strip",
+      "title": "Shop by Category",
+      "display_order": 3,
+      "is_active": true,
+      "category_ids": ["cat_dairy_eggs", "cat_fruits_vegetables", "cat_snacks", "cat_beverages", "cat_staples", "cat_personal_care", "cat_household", "cat_baby_care"],
+      "platforms": ["android", "ios", "web"],
+      "user_segments": ["all"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "section_id": "sec_recently_ordered",
+      "section_type": "recently_ordered",
+      "title": "Order Again",
+      "display_order": 4,
+      "is_active": true,
+      "max_products_shown": 10,
+      "platforms": ["android", "ios"],
+      "user_segments": ["returning_users"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "section_id": "sec_trending",
+      "section_type": "trending_now",
+      "title": "Trending Now",
+      "display_order": 5,
+      "is_active": true,
+      "max_products_shown": 12,
+      "source": "algo_trending_by_zone",
+      "platforms": ["android", "ios", "web"],
+      "user_segments": ["all"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+
+  "sponsored_products": [
+    {
+      "sponsorship_id": "spon_amul_gold_milk_june",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "brand_id": "brand_amul",
+      "supplier_id": "sup_amul_distributor_noida",
+      "placement_type": "search_top",
+      "placement_keywords": ["milk", "amul", "full cream milk", "gold milk"],
+      "placement_categories": ["cat_dairy_eggs", "cat_milk"],
+      "bid_amount_per_click_inr": 2.5,
+      "daily_budget_inr": 500.0,
+      "total_budget_inr": 10000.0,
+      "budget_consumed_inr": 4200.0,
+      "impressions": 284000,
+      "clicks": 14200,
+      "ctr_pct": 5.0,
+      "conversions": 4260,
+      "conversion_rate_pct": 30.0,
+      "revenue_attributed": 289680.0,
+      "roas": 69.0,
+      "is_active": true,
+      "start_at": "2026-06-01T00:00:00.000Z",
+      "end_at": "2026-06-30T23:59:59.000Z",
+      "created_at": "2026-05-28T10:00:00.000Z"
+    }
+  ]
+}

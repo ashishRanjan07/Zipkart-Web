@@ -1,0 +1,473 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["user_events", "funnel_events", "daily_store_metrics", "hourly_metrics_snapshots", "product_impression_logs"],
+    "description": "Captures all user behavioral events (app telemetry), conversion funnel tracking, and aggregated operational metrics for dashboards, ML model training, and business reporting.",
+    "primary_keys": {
+      "user_events": "event_id",
+      "funnel_events": "funnel_event_id",
+      "daily_store_metrics": "metric_id",
+      "hourly_metrics_snapshots": "snapshot_id",
+      "product_impression_logs": "impression_id"
+    },
+    "indexes": {
+      "user_events": [
+        "user_id",
+        "event_type",
+        "dark_store_id",
+        "created_at (DESC)",
+        "session_id",
+        "composite: (user_id, event_type, created_at) — user funnel analysis",
+        "composite: (event_type, created_at) — platform-wide event aggregation"
+      ],
+      "funnel_events": ["funnel_name", "user_id", "step", "session_id", "created_at"],
+      "daily_store_metrics": ["dark_store_id", "metric_date (UNIQUE per store)", "city"],
+      "hourly_metrics_snapshots": ["dark_store_id", "snapshot_hour (DESC)", "composite: (dark_store_id, snapshot_hour) UNIQUE"],
+      "product_impression_logs": ["product_id", "dark_store_id", "user_id", "placement", "created_at (DESC)"]
+    },
+    "enums": {
+      "event_type": [
+        "app_open", "app_background", "app_foreground", "app_crash",
+        "screen_view", "scroll",
+        "search_query", "search_result_click", "search_filter_applied", "search_sort_applied", "search_zero_results",
+        "category_browse", "subcategory_browse",
+        "product_view", "product_image_swipe", "product_variant_select", "product_share",
+        "add_to_cart", "remove_from_cart", "cart_view", "cart_coupon_apply", "cart_coupon_remove",
+        "checkout_start", "checkout_address_select", "checkout_payment_method_select", "checkout_place_order",
+        "order_placed", "order_cancelled",
+        "wishlist_add", "wishlist_remove",
+        "notification_received", "notification_opened", "notification_dismissed",
+        "banner_impression", "banner_click",
+        "flash_sale_view", "flash_sale_product_click",
+        "referral_link_share", "referral_signup_complete",
+        "wallet_topup_start", "wallet_topup_complete",
+        "loyalty_points_view", "subscription_view", "subscription_purchase",
+        "review_submit", "rating_submit",
+        "support_ticket_open", "support_faq_view", "support_chat_start",
+        "account_created", "login_success", "logout",
+        "permission_granted", "permission_denied",
+        "deep_link_open"
+      ],
+      "event_source": ["android_app", "ios_app", "web_app", "pwa", "admin_portal", "partner_app"],
+      "funnel_name": ["registration", "order_placement", "subscription_purchase", "wallet_topup", "referral_onboarding"],
+      "funnel_step_status": ["entered", "completed", "dropped"]
+    },
+    "storage_notes": [
+      "user_events is a very high-volume table — partition by date (daily or weekly) in production",
+      "Consider Apache Kafka + Flink for real-time event streaming before writing to PostgreSQL or ClickHouse",
+      "ClickHouse or BigQuery recommended for analytics queries on user_events (OLAP workload)",
+      "product_impression_logs powers search ranking signals — feed into ML pipeline nightly",
+      "hourly_metrics_snapshots retained for 90 days; daily_store_metrics retained indefinitely",
+      "No PII in product_impression_logs — user_id only, no name/phone/email"
+    ]
+  },
+
+  "user_events": [
+    {
+      "event_id": "ue_3f7a8b2c_app_open_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "anonymous_id": null,
+      "session_id": "usess_3f7a8b2c_abc123",
+      "device_id": "dev_android_3f7a8b2c_01",
+      "platform": "android_app",
+      "app_version": "4.7.2",
+      "os_version": "14",
+      "dark_store_id": "ds_noida_sec62",
+      "delivery_pincode": "201301",
+      "event_type": "app_open",
+      "screen": null,
+      "properties": {
+        "open_type": "cold_start",
+        "push_notification_id": null
+      },
+      "created_at": "2026-06-07T11:45:00.000Z"
+    },
+    {
+      "event_id": "ue_3f7a8b2c_product_view_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "device_id": "dev_android_3f7a8b2c_01",
+      "platform": "android_app",
+      "app_version": "4.7.2",
+      "os_version": "14",
+      "dark_store_id": "ds_noida_sec62",
+      "delivery_pincode": "201301",
+      "event_type": "product_view",
+      "screen": "product_detail",
+      "properties": {
+        "product_id": "prod_amul_gold_milk_1l",
+        "category_id": "cat_dairy_eggs",
+        "source": "search_results",
+        "search_query": "amul milk",
+        "search_position": 1,
+        "selling_price": 68.0,
+        "mrp": 72.0,
+        "discount_pct": 5.56,
+        "is_flash_sale": false,
+        "is_in_stock": true
+      },
+      "created_at": "2026-06-07T11:50:30.000Z"
+    },
+    {
+      "event_id": "ue_3f7a8b2c_add_to_cart_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "device_id": "dev_android_3f7a8b2c_01",
+      "platform": "android_app",
+      "app_version": "4.7.2",
+      "os_version": "14",
+      "dark_store_id": "ds_noida_sec62",
+      "delivery_pincode": "201301",
+      "event_type": "add_to_cart",
+      "screen": "product_detail",
+      "properties": {
+        "product_id": "prod_amul_gold_milk_1l",
+        "variant_id": "var_amul_gold_milk_1l",
+        "category_id": "cat_dairy_eggs",
+        "quantity": 2,
+        "selling_price": 68.0,
+        "source": "product_detail",
+        "cart_item_count_after": 5,
+        "cart_total_after": 388.0
+      },
+      "created_at": "2026-06-07T11:51:00.000Z"
+    },
+    {
+      "event_id": "ue_3f7a8b2c_checkout_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "device_id": "dev_android_3f7a8b2c_01",
+      "platform": "android_app",
+      "app_version": "4.7.2",
+      "dark_store_id": "ds_noida_sec62",
+      "event_type": "checkout_start",
+      "screen": "checkout",
+      "properties": {
+        "cart_id": "crt_3f7a8b2c_active",
+        "cart_total": 388.0,
+        "item_count": 5,
+        "cart_has_coupon": false,
+        "estimated_delivery_minutes": 11
+      },
+      "created_at": "2026-06-07T11:52:00.000Z"
+    },
+    {
+      "event_id": "ue_3f7a8b2c_order_placed_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "device_id": "dev_android_3f7a8b2c_01",
+      "platform": "android_app",
+      "app_version": "4.7.2",
+      "dark_store_id": "ds_noida_sec62",
+      "event_type": "order_placed",
+      "screen": "order_confirmation",
+      "properties": {
+        "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+        "order_display_id": "ORD-2026-ABC123",
+        "gross_total": 388.0,
+        "discount_applied": 0.0,
+        "wallet_amount_applied": 150.0,
+        "delivery_fee": 0.0,
+        "amount_paid": 268.0,
+        "payment_method": "upi",
+        "item_count": 5,
+        "estimated_delivery_minutes": 11,
+        "is_first_order": false,
+        "is_surge_active": false
+      },
+      "created_at": "2026-06-07T11:53:00.000Z"
+    },
+    {
+      "event_id": "ue_anon_001_push_open",
+      "user_id": "1a9d8c7b-6e5f-4a3b-2c1d-0e9f8a7b6c5d",
+      "session_id": "usess_anon001_def456",
+      "device_id": "dev_ios_anon001_02",
+      "platform": "ios_app",
+      "app_version": "4.7.1",
+      "dark_store_id": "ds_gurgaon_sector_30",
+      "event_type": "notification_opened",
+      "screen": "flash_sale_landing",
+      "properties": {
+        "notification_campaign_id": "camp_flash_sale_evening_001",
+        "notification_type": "push",
+        "channel": "push",
+        "deep_link": "zipkart://flash-sale/fs_electronics_june",
+        "utm_source": "push",
+        "utm_medium": "notification",
+        "utm_campaign": "flash_sale_june_07"
+      },
+      "created_at": "2026-06-07T18:00:05.000Z"
+    }
+  ],
+
+  "funnel_events": [
+    {
+      "funnel_event_id": "fe_order_step1",
+      "funnel_name": "order_placement",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "step": 1,
+      "step_name": "cart_view",
+      "step_status": "completed",
+      "time_in_step_seconds": 45,
+      "properties": { "cart_total": 388.0, "item_count": 5 },
+      "created_at": "2026-06-07T11:51:30.000Z"
+    },
+    {
+      "funnel_event_id": "fe_order_step2",
+      "funnel_name": "order_placement",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "step": 2,
+      "step_name": "checkout_start",
+      "step_status": "completed",
+      "time_in_step_seconds": 22,
+      "properties": { "address_count": 3 },
+      "created_at": "2026-06-07T11:52:00.000Z"
+    },
+    {
+      "funnel_event_id": "fe_order_step3",
+      "funnel_name": "order_placement",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "step": 3,
+      "step_name": "checkout_payment_method_select",
+      "step_status": "completed",
+      "time_in_step_seconds": 12,
+      "properties": { "payment_method": "upi" },
+      "created_at": "2026-06-07T11:52:22.000Z"
+    },
+    {
+      "funnel_event_id": "fe_order_step4",
+      "funnel_name": "order_placement",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "step": 4,
+      "step_name": "order_placed",
+      "step_status": "completed",
+      "time_in_step_seconds": 38,
+      "properties": { "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o", "amount_paid": 268.0 },
+      "created_at": "2026-06-07T11:53:00.000Z"
+    },
+    {
+      "funnel_event_id": "fe_sub_drop_001",
+      "funnel_name": "subscription_purchase",
+      "user_id": "9c8d7e6f-1a2b-3c4d-5e6f-7a8b9c0d1e2f",
+      "session_id": "usess_sub_drop_001",
+      "step": 3,
+      "step_name": "checkout_payment_method_select",
+      "step_status": "dropped",
+      "time_in_step_seconds": 180,
+      "properties": { "plan_id": "plan_zipkart_plus_monthly", "drop_reason_inferred": "payment_method_hesitation" },
+      "created_at": "2026-06-07T14:00:00.000Z"
+    }
+  ],
+
+  "daily_store_metrics": [
+    {
+      "metric_id": "dsm_noida_sec62_20260607",
+      "dark_store_id": "ds_noida_sec62",
+      "store_name": "Zipkart Noida Sector 62",
+      "city": "Noida",
+      "metric_date": "2026-06-07",
+
+      "orders_placed": 1842,
+      "orders_delivered": 1796,
+      "orders_cancelled": 38,
+      "orders_failed_delivery": 8,
+      "order_cancellation_rate_pct": 2.06,
+      "order_delivery_success_rate_pct": 97.50,
+
+      "gmv_inr": 2180450.0,
+      "avg_order_value_inr": 1184.0,
+      "total_delivery_fees_collected_inr": 34800.0,
+      "total_surge_fees_collected_inr": 13350.0,
+      "total_discounts_given_inr": 185400.0,
+      "total_wallet_redeemed_inr": 92000.0,
+      "cod_orders": 284,
+      "cod_collection_inr": 215800.0,
+
+      "avg_delivery_time_minutes": 11.2,
+      "median_delivery_time_minutes": 10.8,
+      "p90_delivery_time_minutes": 17.5,
+      "sla_target_minutes": 15,
+      "sla_breach_count": 142,
+      "sla_breach_rate_pct": 7.71,
+
+      "new_users_ordered": 128,
+      "returning_users_ordered": 1714,
+      "plus_subscriber_orders": 342,
+
+      "items_picked": 8946,
+      "picking_accuracy_pct": 99.3,
+      "stockout_events": 15,
+      "unique_products_sold": 642,
+
+      "partner_count_active": 68,
+      "avg_partner_orders_per_day": 26.4,
+      "partner_avg_rating": 4.7,
+
+      "surge_events_count": 2,
+      "surge_total_duration_minutes": 95,
+      "refunds_issued_count": 42,
+      "refunds_amount_inr": 18600.0,
+
+      "revenue_per_order_after_discounts_inr": 1184.0,
+      "contribution_margin_estimate_inr": 218045.0,
+
+      "calculated_at": "2026-06-08T00:05:00.000Z"
+    }
+  ],
+
+  "hourly_metrics_snapshots": [
+    {
+      "snapshot_id": "hms_noida_sec62_20260607T19",
+      "dark_store_id": "ds_noida_sec62",
+      "snapshot_hour": "2026-06-07T19:00:00.000Z",
+
+      "orders_placed_this_hour": 192,
+      "orders_delivered_this_hour": 185,
+      "orders_in_flight": 48,
+      "active_partners": 52,
+      "available_partners": 7,
+      "capacity_utilization_pct": 87,
+      "is_surge_active": true,
+      "current_surge_level": "active",
+      "avg_cart_value_inr": 345.0,
+      "sla_breach_count_this_hour": 18,
+      "stockouts_triggered_this_hour": 3,
+      "gmv_this_hour_inr": 66240.0,
+      "snapshot_created_at": "2026-06-07T19:02:00.000Z"
+    },
+    {
+      "snapshot_id": "hms_noida_sec62_20260607T20",
+      "dark_store_id": "ds_noida_sec62",
+      "snapshot_hour": "2026-06-07T20:00:00.000Z",
+
+      "orders_placed_this_hour": 168,
+      "orders_delivered_this_hour": 171,
+      "orders_in_flight": 29,
+      "active_partners": 55,
+      "available_partners": 18,
+      "capacity_utilization_pct": 69,
+      "is_surge_active": false,
+      "current_surge_level": null,
+      "avg_cart_value_inr": 328.0,
+      "sla_breach_count_this_hour": 8,
+      "stockouts_triggered_this_hour": 0,
+      "gmv_this_hour_inr": 55104.0,
+      "snapshot_created_at": "2026-06-07T20:02:00.000Z"
+    }
+  ],
+
+  "product_impression_logs": [
+    {
+      "impression_id": "impl_amul_gold_search_001",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "dark_store_id": "ds_noida_sec62",
+      "delivery_pincode": "201301",
+      "platform": "android_app",
+      "placement": "search_results",
+      "placement_rank": 1,
+      "search_query": "amul milk",
+      "category_id": "cat_dairy_eggs",
+      "collection_id": null,
+      "selling_price_at_impression": 68.0,
+      "mrp_at_impression": 72.0,
+      "is_in_stock": true,
+      "is_flash_sale": false,
+      "is_sponsored": false,
+      "was_clicked": true,
+      "was_added_to_cart": true,
+      "was_ordered": true,
+      "impression_at": "2026-06-07T11:50:25.000Z"
+    },
+    {
+      "impression_id": "impl_pepsi_homepage_001",
+      "product_id": "prod_pepsi_2l",
+      "variant_id": "var_pepsi_2l",
+      "user_id": "1a9d8c7b-6e5f-4a3b-2c1d-0e9f8a7b6c5d",
+      "session_id": "usess_anon001_def456",
+      "dark_store_id": "ds_gurgaon_sector_30",
+      "delivery_pincode": "122001",
+      "platform": "ios_app",
+      "placement": "homepage_trending",
+      "placement_rank": 4,
+      "search_query": null,
+      "category_id": "cat_cold_drinks",
+      "collection_id": null,
+      "selling_price_at_impression": 89.0,
+      "mrp_at_impression": 95.0,
+      "is_in_stock": true,
+      "is_flash_sale": false,
+      "is_sponsored": true,
+      "sponsor_campaign_id": "spon_pepsi_june_2026",
+      "was_clicked": false,
+      "was_added_to_cart": false,
+      "was_ordered": false,
+      "impression_at": "2026-06-07T18:00:10.000Z"
+    },
+    {
+      "impression_id": "impl_chips_flashsale_001",
+      "product_id": "prod_lays_american_cream_onion_26g",
+      "variant_id": "var_lays_aoc_26g",
+      "user_id": "7e2f1a8d-4b3c-4e5f-9a2b-1c3d5e7f9b2a",
+      "session_id": "usess_7e2f1a8d_ghi789",
+      "dark_store_id": "ds_noida_sec62",
+      "delivery_pincode": "201301",
+      "platform": "android_app",
+      "placement": "flash_sale_listing",
+      "placement_rank": 2,
+      "flash_sale_id": "fs_snacks_june_07",
+      "selling_price_at_impression": 10.0,
+      "mrp_at_impression": 20.0,
+      "is_in_stock": true,
+      "is_flash_sale": true,
+      "is_sponsored": false,
+      "was_clicked": true,
+      "was_added_to_cart": true,
+      "was_ordered": false,
+      "impression_at": "2026-06-07T20:00:30.000Z"
+    }
+  ],
+
+  "analytics_dashboard_summary": {
+    "as_of": "2026-06-07T22:00:00.000Z",
+    "period": "today",
+
+    "platform_wide": {
+      "total_orders_today": 18420,
+      "total_gmv_today_inr": 21804500.0,
+      "avg_order_value_inr": 1184.0,
+      "total_new_users_today": 1280,
+      "total_active_users_today": 42800,
+      "order_delivery_success_rate_pct": 97.5,
+      "avg_delivery_time_minutes": 11.4,
+      "sla_breach_rate_pct_today": 7.6,
+      "total_refunds_issued_inr": 186000.0,
+      "total_active_dark_stores": 18,
+      "total_active_delivery_partners": 1240
+    },
+
+    "top_categories_by_gmv": [
+      { "category": "Dairy & Eggs", "gmv_inr": 4360900.0, "share_pct": 20.0 },
+      { "category": "Beverages", "gmv_inr": 3270675.0, "share_pct": 15.0 },
+      { "category": "Snacks & Packaged Foods", "gmv_inr": 2834585.0, "share_pct": 13.0 },
+      { "category": "Fruits & Vegetables", "gmv_inr": 2398495.0, "share_pct": 11.0 },
+      { "category": "Household Essentials", "gmv_inr": 1962405.0, "share_pct": 9.0 }
+    ],
+
+    "funnel_today": {
+      "app_opens": 248500,
+      "product_views": 186375,
+      "add_to_cart_events": 62000,
+      "checkout_starts": 28400,
+      "orders_placed": 18420,
+      "checkout_to_order_conversion_pct": 64.86,
+      "product_view_to_cart_pct": 33.26,
+      "overall_session_to_order_pct": 7.41
+    }
+  }
+}

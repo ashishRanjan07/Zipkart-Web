@@ -1,0 +1,213 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["pricing_rules", "delivery_fee_configs", "surge_configs", "surge_events", "dynamic_pricing_logs"],
+    "description": "Controls all pricing logic — delivery fee tiers by order value and distance, surge pricing activation during peak demand, rule-based dynamic pricing adjustments, and an immutable audit log of all price changes applied at checkout.",
+    "primary_keys": {
+      "pricing_rules": "rule_id",
+      "delivery_fee_configs": "fee_config_id",
+      "surge_configs": "surge_config_id",
+      "surge_events": "surge_event_id",
+      "dynamic_pricing_logs": "log_id"
+    },
+    "indexes": {
+      "pricing_rules": ["rule_type", "is_active", "priority", "valid_from", "valid_to"],
+      "surge_events": ["dark_store_id", "zone_id", "is_active", "triggered_at"],
+      "dynamic_pricing_logs": ["order_id", "product_id", "dark_store_id", "created_at"]
+    },
+    "enums": {
+      "rule_type": ["delivery_fee", "product_price_markup", "product_price_discount", "surge_multiplier", "packaging_fee", "tip_config"],
+      "fee_basis": ["order_value", "distance_km", "flat", "percentage"],
+      "surge_trigger": ["manual", "auto_high_demand", "auto_low_supply", "auto_peak_hour", "weather_event", "festival"],
+      "surge_status": ["monitoring", "warning", "active", "critical"],
+      "pricing_rule_scope": ["global", "city", "zone", "dark_store", "pincode", "user_segment", "platform"]
+    },
+    "business_rules": [
+      "Delivery fee = base_fee + distance_component + packaging_fee - free_delivery_discount",
+      "Surge multiplier applies on delivery fee only, NOT on product prices",
+      "Gold/Platinum/VIP tier users and Plus subscribers are exempt from surge fees",
+      "Free delivery threshold checked AFTER discounts are applied",
+      "Pricing rules evaluated in priority order; first matching rule wins"
+    ]
+  },
+
+  "delivery_fee_configs": [
+    {
+      "fee_config_id": "dfc_standard_noida",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "config_name": "Standard Delivery Fee - Noida",
+      "is_active": true,
+      "currency": "INR",
+
+      "free_delivery_above_order_value": 99.0,
+      "free_delivery_for_plus_subscribers": true,
+      "free_delivery_for_tiers": ["platinum", "vip"],
+
+      "base_fee_inr": 10.0,
+      "distance_fee_per_km_inr": 5.0,
+      "fee_tiers": [
+        { "min_order_value": 0.0,   "max_order_value": 49.99,  "delivery_fee": 30.0 },
+        { "min_order_value": 50.0,  "max_order_value": 98.99,  "delivery_fee": 20.0 },
+        { "min_order_value": 99.0,  "max_order_value": 199.99, "delivery_fee": 10.0 },
+        { "min_order_value": 200.0, "max_order_value": null,   "delivery_fee": 0.0 }
+      ],
+
+      "packaging_fee_inr": 2.0,
+      "packaging_fee_waived_above": 199.0,
+
+      "small_cart_fee_inr": 10.0,
+      "small_cart_threshold_inr": 50.0,
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-01-01T10:00:00.000Z",
+      "version": 4
+    }
+  ],
+
+  "surge_configs": [
+    {
+      "surge_config_id": "sgcfg_noida_sec62",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "is_enabled": true,
+      "auto_trigger_enabled": true,
+
+      "thresholds": {
+        "warning_capacity_pct": 70,
+        "active_capacity_pct": 85,
+        "critical_capacity_pct": 95
+      },
+
+      "surge_levels": [
+        {
+          "level": "warning",
+          "multiplier": 1.0,
+          "label": "High Demand",
+          "display_message": "High demand in your area",
+          "delivery_fee_add_on_inr": 0.0,
+          "sla_adjustment_minutes": 3
+        },
+        {
+          "level": "active",
+          "multiplier": 1.5,
+          "label": "Surge Pricing",
+          "display_message": "Surge pricing active due to high demand",
+          "delivery_fee_add_on_inr": 15.0,
+          "sla_adjustment_minutes": 5
+        },
+        {
+          "level": "critical",
+          "multiplier": 2.0,
+          "label": "Very High Demand",
+          "display_message": "Very high demand. Delivery may take longer.",
+          "delivery_fee_add_on_inr": 25.0,
+          "sla_adjustment_minutes": 10
+        }
+      ],
+
+      "exempt_user_segments": ["platinum_tier", "vip_tier", "zipkart_plus_subscribers"],
+      "max_surge_duration_minutes": 60,
+      "cooldown_after_surge_minutes": 15,
+      "peak_hours_auto_surge": [
+        { "day_type": "all", "start": "08:00", "end": "10:00", "level": "warning" },
+        { "day_type": "all", "start": "19:00", "end": "21:00", "level": "active" }
+      ],
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-04-01T10:00:00.000Z"
+    }
+  ],
+
+  "surge_events": [
+    {
+      "surge_event_id": "sge_noida_20260607_evening",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "surge_trigger": "auto_high_demand",
+      "surge_level": "active",
+      "surge_multiplier": 1.5,
+      "delivery_fee_add_on_inr": 15.0,
+      "capacity_pct_at_trigger": 87,
+      "active_orders_at_trigger": 312,
+      "partner_available_count_at_trigger": 52,
+      "triggered_at": "2026-06-07T19:05:00.000Z",
+      "triggered_by": "system_auto",
+      "notified_admins": ["adm_9f8a7b6c", "adm_store_manager_01"],
+      "acknowledged_by": "adm_store_manager_01",
+      "acknowledged_at": "2026-06-07T19:07:00.000Z",
+      "ended_at": "2026-06-07T20:00:00.000Z",
+      "end_reason": "capacity_normalized",
+      "duration_minutes": 55,
+      "orders_during_surge": 890,
+      "extra_delivery_fee_collected": 13350.0
+    }
+  ],
+
+  "pricing_rules": [
+    {
+      "rule_id": "pr_001_free_delivery_summer_sale",
+      "rule_type": "delivery_fee",
+      "rule_name": "June Summer Sale - Free Delivery",
+      "description": "Free delivery on all orders during June Summer Sale 2026, regardless of order value.",
+      "scope": "global",
+      "applicable_dark_store_ids": ["all"],
+      "applicable_user_segments": ["all"],
+      "applicable_platforms": ["android", "ios", "web"],
+      "priority": 100,
+
+      "condition": "promotion_id == 'promo_june_summer_2026'",
+      "action": "set_delivery_fee_to_zero",
+      "discount_type": "override",
+      "discount_value": 0.0,
+      "max_discount_cap": null,
+
+      "promotion_id": "promo_june_summer_2026",
+      "coupon_id": null,
+
+      "valid_from": "2026-06-01T00:00:00.000Z",
+      "valid_to": "2026-06-30T23:59:59.000Z",
+      "is_active": true,
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-05-28T10:00:00.000Z"
+    },
+    {
+      "rule_id": "pr_002_small_cart_fee",
+      "rule_type": "delivery_fee",
+      "rule_name": "Small Cart Fee",
+      "description": "Charge Rs.10 extra for orders below Rs.50 to discourage micro-orders.",
+      "scope": "global",
+      "priority": 10,
+      "condition": "cart_value < 50.00",
+      "action": "add_small_cart_fee",
+      "discount_type": "surcharge",
+      "discount_value": 10.0,
+      "valid_from": "2024-01-15T00:00:00.000Z",
+      "valid_to": null,
+      "is_active": true,
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+
+  "dynamic_pricing_log_sample": {
+    "log_id": "dpl_order_abc123",
+    "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "dark_store_id": "ds_noida_sec62",
+    "order_subtotal": 388.0,
+    "delivery_fee_standard": 0.0,
+    "surge_active": false,
+    "surge_fee": 0.0,
+    "packaging_fee": 2.0,
+    "coupon_discount": 0.0,
+    "wallet_deducted": 150.0,
+    "final_delivery_fee": 0.0,
+    "final_total": 268.0,
+    "pricing_rules_applied": ["dfc_standard_noida"],
+    "free_delivery_reason": "order_value_above_threshold_99",
+    "is_surge_exempt": false,
+    "created_at": "2026-06-06T21:15:00.000Z"
+  }
+}

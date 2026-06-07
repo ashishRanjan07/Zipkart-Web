@@ -1,0 +1,237 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["otp_requests", "user_sessions", "admin_sessions", "refresh_tokens", "token_blacklist"],
+    "description": "Manages all authentication flows — OTP issuance and verification, user/admin session lifecycle, refresh token rotation, and token revocation.",
+    "primary_keys": {
+      "otp_requests": "otp_id",
+      "user_sessions": "session_id",
+      "admin_sessions": "session_id",
+      "refresh_tokens": "token_id",
+      "token_blacklist": "blacklist_id"
+    },
+    "indexes": {
+      "otp_requests": [
+        "identifier (phone/email)",
+        "otp_type",
+        "status",
+        "expires_at",
+        "composite: (identifier, otp_type, status)"
+      ],
+      "user_sessions": [
+        "user_id",
+        "access_token_hash (UNIQUE)",
+        "device_id",
+        "status",
+        "expires_at"
+      ],
+      "refresh_tokens": [
+        "token_hash (UNIQUE)",
+        "user_id",
+        "is_revoked",
+        "expires_at"
+      ],
+      "token_blacklist": [
+        "token_jti (UNIQUE)",
+        "expires_at (for TTL cleanup)"
+      ]
+    },
+    "enums": {
+      "otp_type": [
+        "phone_login",
+        "email_login",
+        "phone_verification",
+        "email_verification",
+        "password_reset",
+        "payment_confirmation",
+        "wallet_withdrawal",
+        "admin_mfa_backup",
+        "change_phone",
+        "change_email",
+        "account_deletion"
+      ],
+      "otp_channel": ["sms", "email", "whatsapp", "voice_call"],
+      "otp_status": ["pending", "verified", "expired", "max_attempts_exceeded", "invalidated"],
+      "session_status": ["active", "expired", "revoked", "logged_out"],
+      "token_revocation_reason": ["user_logout", "admin_force_logout", "session_expired", "password_changed", "account_suspended", "security_alert", "mfa_required"]
+    },
+    "constraints": [
+      "Max 5 OTP requests per identifier per 15 minutes (rate limiting)",
+      "Max 3 OTP verification attempts before status = max_attempts_exceeded",
+      "OTP expires in 5 minutes (login), 10 minutes (other actions)",
+      "Refresh token valid for 30 days, rotated on each use",
+      "Access token TTL: 15 minutes (user app), 30 minutes (admin panel)"
+    ],
+    "security_notes": [
+      "OTP values are NEVER stored in plaintext — only bcrypt hash is stored",
+      "Access tokens are JWT (HS256/RS256); only the JTI is stored for blacklisting",
+      "Refresh tokens stored as SHA256 hash only",
+      "All tokens purged from blacklist after their natural expiry time (TTL cleanup)"
+    ]
+  },
+
+  "otp_requests": [
+    {
+      "otp_id": "otp_login_9876543210_001",
+      "identifier": "9876543210",
+      "identifier_type": "phone",
+      "country_code": "+91",
+      "otp_type": "phone_login",
+      "otp_channel": "sms",
+      "otp_hash": "$2b$10$hashedOTPvalue1234567890abcdef",
+      "otp_length": 6,
+      "status": "verified",
+      "attempts_made": 1,
+      "max_attempts": 3,
+      "issued_at": "2026-06-07T09:44:00.000Z",
+      "expires_at": "2026-06-07T09:49:00.000Z",
+      "verified_at": "2026-06-07T09:45:10.000Z",
+      "invalidated_at": null,
+      "invalidation_reason": null,
+      "ip_address": "103.58.154.62",
+      "user_agent": "Zipkart Android App 4.7.2",
+      "device_id": "d1e2f3a4-5b6c-7d8e-9f0a-1b2c3d4e5f6a",
+      "gateway": "twilio",
+      "gateway_message_id": "SM_twilio_otp_xyz789",
+      "gateway_cost_inr": 0.35,
+      "is_resend": false,
+      "resend_count": 0,
+      "previous_otp_id": null
+    },
+    {
+      "otp_id": "otp_payment_confirm_001",
+      "identifier": "9876543210",
+      "identifier_type": "phone",
+      "country_code": "+91",
+      "otp_type": "payment_confirmation",
+      "otp_channel": "sms",
+      "otp_hash": "$2b$10$hashedOTPvalue_payment_1234567",
+      "otp_length": 4,
+      "status": "verified",
+      "attempts_made": 1,
+      "max_attempts": 3,
+      "issued_at": "2026-06-06T21:15:00.000Z",
+      "expires_at": "2026-06-06T21:20:00.000Z",
+      "verified_at": "2026-06-06T21:15:30.000Z",
+      "invalidated_at": null,
+      "invalidation_reason": null,
+      "ip_address": "103.58.154.62",
+      "user_agent": "Zipkart Android App 4.7.2",
+      "device_id": "d1e2f3a4-5b6c-7d8e-9f0a-1b2c3d4e5f6a",
+      "gateway": "twilio",
+      "gateway_message_id": "SM_twilio_otp_pay_abc123",
+      "gateway_cost_inr": 0.35,
+      "is_resend": false,
+      "resend_count": 0,
+      "reference_id": "ord_abc123",
+      "reference_type": "order"
+    }
+  ],
+
+  "otp_rate_limits": {
+    "_table": "otp_rate_limits",
+    "_description": "Tracks OTP request counts per identifier to enforce rate limiting.",
+    "rate_limit_id": "rl_phone_9876543210",
+    "identifier": "9876543210",
+    "identifier_type": "phone",
+    "otp_type": "phone_login",
+    "window_start": "2026-06-07T09:30:00.000Z",
+    "window_end": "2026-06-07T09:45:00.000Z",
+    "request_count": 1,
+    "max_allowed": 5,
+    "is_blocked": false,
+    "blocked_until": null
+  },
+
+  "user_sessions": [
+    {
+      "session_id": "usess_3f7a8b2c_abc123",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "device_id": "d1e2f3a4-5b6c-7d8e-9f0a-1b2c3d4e5f6a",
+      "device_name": "OnePlus 11R",
+      "device_os": "Android 14",
+      "device_platform": "android",
+      "app_version": "4.7.2",
+      "fcm_token": "fcm_token_abc123xyz456_android",
+
+      "access_token_jti": "jwt_jti_abc123def456",
+      "refresh_token_id": "rt_3f7a8b2c_001",
+
+      "ip_address": "103.58.154.62",
+      "ip_country": "IN",
+      "ip_city": "Noida",
+      "user_agent": "Zipkart Android App/4.7.2 (OnePlus CPH2491; Android 14)",
+
+      "status": "active",
+      "login_method": "otp",
+      "otp_id": "otp_login_9876543210_001",
+
+      "created_at": "2026-06-07T09:45:22.000Z",
+      "last_activity_at": "2026-06-07T12:00:00.000Z",
+      "expires_at": "2026-07-07T09:45:22.000Z",
+      "logged_out_at": null,
+      "revoked_at": null,
+      "revocation_reason": null
+    }
+  ],
+
+  "admin_sessions": [
+    {
+      "session_id": "sess_abc123def456",
+      "admin_id": "adm_9f8a7b6c-5d4e-3f2a-1b0c-9d8e7f6a5b4c",
+      "device_name": "MacBook Pro",
+      "device_os": "macOS 14.2",
+      "browser": "Chrome 125",
+      "ip_address": "103.58.154.100",
+      "ip_country": "IN",
+      "ip_city": "Noida",
+      "user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+
+      "access_token_jti": "jwt_admin_jti_xyz789uvw",
+      "refresh_token_id": "rt_admin_9f8a7b6c_001",
+
+      "status": "active",
+      "login_method": "password_plus_mfa",
+      "mfa_verified": true,
+      "mfa_type": "totp",
+      "mfa_verified_at": "2026-06-07T09:30:05.000Z",
+
+      "created_at": "2026-06-07T09:30:00.000Z",
+      "last_activity_at": "2026-06-07T11:45:00.000Z",
+      "expires_at": "2026-06-07T10:00:00.000Z",
+      "logged_out_at": null,
+      "revoked_at": null,
+      "revocation_reason": null
+    }
+  ],
+
+  "refresh_tokens": [
+    {
+      "token_id": "rt_3f7a8b2c_001",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "session_id": "usess_3f7a8b2c_abc123",
+      "token_hash": "sha256_of_refresh_token_string",
+      "device_id": "d1e2f3a4-5b6c-7d8e-9f0a-1b2c3d4e5f6a",
+      "is_revoked": false,
+      "issued_at": "2026-06-07T09:45:22.000Z",
+      "expires_at": "2026-07-07T09:45:22.000Z",
+      "last_used_at": "2026-06-07T09:45:22.000Z",
+      "rotated_to_token_id": null,
+      "revoked_at": null,
+      "revocation_reason": null
+    }
+  ],
+
+  "token_blacklist": [
+    {
+      "blacklist_id": "bl_001",
+      "token_jti": "jwt_jti_old_session_001",
+      "token_type": "access_token",
+      "entity_type": "user",
+      "entity_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "revocation_reason": "user_logout",
+      "revoked_at": "2026-06-06T22:00:00.000Z",
+      "original_expiry": "2026-06-06T22:15:00.000Z",
+      "created_at": "2026-06-06T22:00:00.000Z"
+    }
+  ]
+}

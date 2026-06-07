@@ -1,0 +1,235 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["delivery_zones", "zone_dark_store_assignments", "pincode_serviceability", "geofences", "delivery_zone_restrictions"],
+    "description": "Defines geographic delivery zones, maps them to dark stores, controls pincode-level serviceability, and stores geofence polygon boundaries for real-time location checks.",
+    "primary_keys": {
+      "delivery_zones": "zone_id",
+      "pincode_serviceability": "serviceability_id",
+      "geofences": "geofence_id"
+    },
+    "indexes": {
+      "delivery_zones": ["zone_code (UNIQUE)", "city", "status"],
+      "pincode_serviceability": [
+        "pincode (UNIQUE within dark_store)",
+        "dark_store_id",
+        "is_serviceable",
+        "composite: (pincode, dark_store_id) UNIQUE"
+      ],
+      "geofences": ["dark_store_id (UNIQUE)", "geofence_type"]
+    },
+    "enums": {
+      "zone_status": ["active", "inactive", "under_expansion", "sunset"],
+      "serviceability_status": ["serviceable", "temporarily_unavailable", "unserviceable", "coming_soon"],
+      "geofence_type": ["delivery_zone", "no_go_zone", "restricted_zone", "dark_store_boundary"],
+      "restriction_type": ["alcohol_not_allowed", "tobacco_not_allowed", "cod_not_allowed", "prescription_not_allowed"]
+    },
+    "spatial_notes": [
+      "Geofence boundaries stored as GeoJSON Polygon coordinates (WGS84)",
+      "PostGIS extension recommended for spatial queries",
+      "Pincode centroid coordinates stored for distance calculations",
+      "Delivery radius checked against geofence polygon for precise boundary enforcement"
+    ]
+  },
+
+  "delivery_zones": [
+    {
+      "zone_id": "zone_north_noida_1",
+      "zone_code": "ZONE-NN-001",
+      "zone_name": "North Noida Zone 1",
+      "city": "Noida",
+      "district": "Gautam Buddha Nagar",
+      "state": "Uttar Pradesh",
+      "state_code": "UP",
+      "country": "IN",
+      "region": "Delhi NCR",
+      "cluster": "North India",
+      "status": "active",
+      "timezone": "Asia/Kolkata",
+      "center_latitude": 28.6200,
+      "center_longitude": 77.3800,
+      "approximate_radius_km": 3.5,
+      "total_pincodes": 6,
+      "active_pincodes": 6,
+      "primary_dark_store_id": "ds_noida_sec62",
+      "backup_dark_store_id": "ds_noida_sec18",
+      "delivery_sla_minutes": 12,
+      "max_delivery_minutes": 20,
+      "cod_enabled": true,
+      "alcohol_delivery_enabled": false,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "zone_id": "zone_gurgaon_dlf",
+      "zone_code": "ZONE-GGN-002",
+      "zone_name": "Gurgaon DLF Phase Zone",
+      "city": "Gurugram",
+      "district": "Gurugram",
+      "state": "Haryana",
+      "state_code": "HR",
+      "country": "IN",
+      "region": "Delhi NCR",
+      "cluster": "North India",
+      "status": "active",
+      "timezone": "Asia/Kolkata",
+      "center_latitude": 28.4912,
+      "center_longitude": 77.0875,
+      "approximate_radius_km": 4.0,
+      "total_pincodes": 8,
+      "active_pincodes": 7,
+      "primary_dark_store_id": "ds_gurgaon_sector_30",
+      "backup_dark_store_id": null,
+      "delivery_sla_minutes": 15,
+      "max_delivery_minutes": 22,
+      "cod_enabled": true,
+      "alcohol_delivery_enabled": false,
+      "created_at": "2024-03-01T10:00:00.000Z",
+      "updated_at": "2026-04-01T10:00:00.000Z"
+    }
+  ],
+
+  "zone_dark_store_assignments": [
+    {
+      "assignment_id": "zda_001",
+      "zone_id": "zone_north_noida_1",
+      "dark_store_id": "ds_noida_sec62",
+      "assignment_type": "primary",
+      "priority": 1,
+      "is_active": true,
+      "failover_enabled": true,
+      "failover_trigger": "store_capacity_above_90_pct",
+      "failover_to_store_id": "ds_noida_sec18",
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+
+  "pincode_serviceability": [
+    {
+      "serviceability_id": "ps_201301_ds_noida_sec62",
+      "pincode": "201301",
+      "pincode_area_name": "Sector 62, Noida",
+      "city": "Noida",
+      "state": "Uttar Pradesh",
+      "state_code": "UP",
+      "country": "IN",
+      "centroid_latitude": 28.6139,
+      "centroid_longitude": 77.2090,
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "is_serviceable": true,
+      "serviceability_status": "serviceable",
+      "estimated_delivery_minutes": 10,
+      "max_delivery_minutes": 18,
+      "distance_from_store_km": 1.2,
+      "cod_available": true,
+      "min_order_value_for_delivery": 0.0,
+      "free_delivery_above": 99.0,
+      "surge_eligible": true,
+      "alcohol_delivery": false,
+      "prescription_delivery": false,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "serviceability_id": "ps_201304_ds_noida_sec62",
+      "pincode": "201304",
+      "pincode_area_name": "Sector 15A, Noida",
+      "city": "Noida",
+      "state": "Uttar Pradesh",
+      "state_code": "UP",
+      "country": "IN",
+      "centroid_latitude": 28.5900,
+      "centroid_longitude": 77.3200,
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "is_serviceable": true,
+      "serviceability_status": "serviceable",
+      "estimated_delivery_minutes": 14,
+      "max_delivery_minutes": 22,
+      "distance_from_store_km": 2.8,
+      "cod_available": true,
+      "min_order_value_for_delivery": 0.0,
+      "free_delivery_above": 99.0,
+      "surge_eligible": true,
+      "alcohol_delivery": false,
+      "prescription_delivery": false,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "serviceability_id": "ps_999999_unserviceable",
+      "pincode": "999999",
+      "pincode_area_name": "Remote Area",
+      "city": "Unknown",
+      "state": "Unknown",
+      "state_code": "NA",
+      "country": "IN",
+      "centroid_latitude": null,
+      "centroid_longitude": null,
+      "dark_store_id": null,
+      "zone_id": null,
+      "is_serviceable": false,
+      "serviceability_status": "unserviceable",
+      "estimated_delivery_minutes": null,
+      "cod_available": false,
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+
+  "geofences": [
+    {
+      "geofence_id": "gf_ds_noida_sec62_delivery",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "geofence_type": "delivery_zone",
+      "name": "Noida Sector 62 Delivery Zone",
+      "description": "Delivery coverage area for ds_noida_sec62",
+      "radius_meters": 3500,
+      "center_latitude": 28.6139,
+      "center_longitude": 77.2090,
+      "polygon_geojson": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [77.1850, 28.6380],
+            [77.2350, 28.6380],
+            [77.2350, 28.5900],
+            [77.1850, 28.5900],
+            [77.1850, 28.6380]
+          ]
+        ]
+      },
+      "is_active": true,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "geofence_id": "gf_ds_noida_sec62_store",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "geofence_type": "dark_store_boundary",
+      "name": "Noida Sector 62 Store Pickup Boundary",
+      "description": "200m radius around dark store — partner must enter to confirm pickup",
+      "radius_meters": 200,
+      "center_latitude": 28.6139,
+      "center_longitude": 77.2090,
+      "polygon_geojson": null,
+      "is_active": true,
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+
+  "delivery_zone_restrictions": [
+    {
+      "restriction_id": "dzr_001",
+      "zone_id": "zone_north_noida_1",
+      "pincode": null,
+      "restriction_type": "alcohol_not_allowed",
+      "reason": "State excise policy — alcohol home delivery not permitted in UP",
+      "effective_from": "2024-01-15",
+      "effective_to": null,
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ]
+}

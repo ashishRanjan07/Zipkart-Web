@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/auth/ProtectedRoute';
 import Layout from './components/layout/Layout';
+import Toast from './components/ui/Toast';
 
 // Auth pages
 import Login from './pages/auth/Login';
@@ -28,6 +29,7 @@ import AppConfig from './pages/AppConfig';
 export default function App() {
   return (
     <BrowserRouter>
+      <Toast />
       <AuthProvider>
         <Routes>
           {/* Public auth routes */}

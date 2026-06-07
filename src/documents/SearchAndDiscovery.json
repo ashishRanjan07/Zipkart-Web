@@ -1,0 +1,203 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["search_query_logs", "search_click_logs", "autocomplete_suggestions", "trending_searches", "zero_result_searches", "product_collections"],
+    "description": "Powers the search and discovery engine — logs every search query, tracks click-throughs, drives autocomplete and trending suggestions, flags zero-result gaps, and manages curated product collections.",
+    "primary_keys": {
+      "search_query_logs": "search_id",
+      "search_click_logs": "click_id",
+      "autocomplete_suggestions": "suggestion_id",
+      "trending_searches": "trending_id",
+      "product_collections": "collection_id"
+    },
+    "indexes": {
+      "search_query_logs": ["user_id", "query", "dark_store_id", "created_at (DESC)", "result_count", "is_zero_result"],
+      "autocomplete_suggestions": ["query_prefix", "is_active", "priority (DESC)"],
+      "trending_searches": ["dark_store_id", "zone_id", "is_active", "search_count (DESC)", "updated_at"]
+    },
+    "enums": {
+      "search_source": ["search_bar", "voice_search", "category_browse", "barcode_scan", "recent_searches", "autocomplete_click"],
+      "search_sort": ["relevance", "price_low_to_high", "price_high_to_low", "discount", "new_arrivals", "rating"],
+      "filter_type": ["brand", "category", "price_range", "rating", "discount", "in_stock_only", "veg_only", "organic"]
+    },
+    "search_engine_notes": [
+      "Elasticsearch / OpenSearch recommended for full-text search index",
+      "Typo tolerance enabled — 'mlk' should match 'milk'",
+      "Synonym support: 'coke' -> 'coca cola', 'maggi' -> 'instant noodles'",
+      "Search index rebuilt nightly; real-time delta updates on price/stock changes",
+      "Personalized ranking based on user_id purchase history and location"
+    ]
+  },
+
+  "search_query_log": {
+    "search_id": "srch_3f7a8b2c_20260607_001",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "session_id": "usess_3f7a8b2c_abc123",
+    "device_platform": "android",
+    "dark_store_id": "ds_noida_sec62",
+    "delivery_pincode": "201301",
+
+    "raw_query": "amul milk",
+    "normalized_query": "amul milk",
+    "query_length": 9,
+    "search_source": "search_bar",
+    "is_voice_search": false,
+
+    "result_count": 14,
+    "is_zero_result": false,
+    "top_product_id": "prod_amul_gold_milk_1l",
+    "page": 1,
+    "results_per_page": 20,
+
+    "filters_applied": [],
+    "sort_applied": "relevance",
+
+    "clicked_product_ids": ["prod_amul_gold_milk_1l"],
+    "added_to_cart_product_ids": ["prod_amul_gold_milk_1l"],
+    "ordered_product_ids": [],
+    "click_count": 1,
+    "add_to_cart_count": 1,
+    "order_conversion": false,
+
+    "response_time_ms": 120,
+    "search_engine": "elasticsearch",
+    "ab_test_variant": "algo_v3",
+
+    "created_at": "2026-06-07T11:50:00.000Z"
+  },
+
+  "zero_result_searches": [
+    {
+      "zero_result_id": "zrs_001",
+      "raw_query": "haldirams bhujia",
+      "normalized_query": "haldirams bhujia",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "search_count_7_days": 142,
+      "is_catalog_gap": true,
+      "is_spelling_issue": false,
+      "suggested_action": "add_to_catalog",
+      "assigned_to_category_manager": "adm_7h6g5f4e",
+      "status": "pending_review",
+      "first_seen_at": "2026-06-01T10:00:00.000Z",
+      "last_seen_at": "2026-06-07T11:30:00.000Z"
+    },
+    {
+      "zero_result_id": "zrs_002",
+      "raw_query": "lais chips",
+      "normalized_query": "lais chips",
+      "dark_store_id": "ds_noida_sec62",
+      "search_count_7_days": 88,
+      "is_catalog_gap": false,
+      "is_spelling_issue": true,
+      "spelling_correction": "lay's chips",
+      "suggested_action": "add_synonym",
+      "status": "resolved",
+      "first_seen_at": "2026-05-25T10:00:00.000Z",
+      "last_seen_at": "2026-06-06T10:00:00.000Z"
+    }
+  ],
+
+  "trending_searches": [
+    {
+      "trending_id": "trnd_noida_001",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "query": "mango",
+      "display_query": "Fresh Mango",
+      "search_count_24h": 4820,
+      "search_count_7d": 28500,
+      "trend_velocity": "rising_fast",
+      "trend_pct_change": 145.0,
+      "is_seasonal": true,
+      "is_active": true,
+      "display_order": 1,
+      "icon_emoji": null,
+      "updated_at": "2026-06-07T10:00:00.000Z"
+    },
+    {
+      "trending_id": "trnd_noida_002",
+      "dark_store_id": "ds_noida_sec62",
+      "zone_id": "zone_north_noida_1",
+      "query": "cold drink",
+      "display_query": "Cold Drinks",
+      "search_count_24h": 3640,
+      "search_count_7d": 21800,
+      "trend_velocity": "rising",
+      "trend_pct_change": 82.0,
+      "is_seasonal": true,
+      "is_active": true,
+      "display_order": 2,
+      "updated_at": "2026-06-07T10:00:00.000Z"
+    }
+  ],
+
+  "autocomplete_suggestions": [
+    {
+      "suggestion_id": "ac_amul_milk",
+      "query_prefix": "amul m",
+      "suggestion": "amul milk",
+      "display_text": "Amul Milk",
+      "suggestion_type": "product_query",
+      "product_id": null,
+      "category_id": null,
+      "icon_url": null,
+      "priority": 100,
+      "search_volume_rank": 1,
+      "is_curated": false,
+      "is_active": true,
+      "dark_store_ids": ["all"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "suggestion_id": "ac_dairy_cat",
+      "query_prefix": "dai",
+      "suggestion": "dairy",
+      "display_text": "Dairy & Eggs",
+      "suggestion_type": "category",
+      "product_id": null,
+      "category_id": "cat_dairy_eggs",
+      "icon_url": "https://cdn.zipkart.com/categories/icons/dairy_eggs.svg",
+      "priority": 90,
+      "is_curated": true,
+      "is_active": true,
+      "dark_store_ids": ["all"],
+      "created_at": "2024-01-15T10:00:00.000Z"
+    }
+  ],
+
+  "product_collections": [
+    {
+      "collection_id": "coll_summer_sale_products",
+      "name": "Summer Sale Picks",
+      "slug": "summer-sale-2026",
+      "description": "Hand-curated products with the best deals this summer.",
+      "promotion_id": "promo_june_summer_2026",
+      "image_url": "https://cdn.zipkart.com/collections/summer_sale_cover.jpg",
+      "is_active": true,
+      "is_public": true,
+      "display_order": 1,
+      "product_count": 485,
+      "product_ids": ["prod_amul_gold_milk_1l", "prod_coca_cola_2l", "prod_britannia_bourbon"],
+      "sort_strategy": "discount_pct_desc",
+      "created_by": "adm_7h6g5f4e",
+      "created_at": "2026-05-28T10:00:00.000Z",
+      "updated_at": "2026-06-01T00:00:00.000Z"
+    },
+    {
+      "collection_id": "coll_daily_essentials",
+      "name": "Daily Essentials",
+      "slug": "daily-essentials",
+      "description": "Everything you need every day — delivered in 10 minutes.",
+      "promotion_id": null,
+      "image_url": "https://cdn.zipkart.com/collections/daily_essentials_cover.jpg",
+      "is_active": true,
+      "is_public": true,
+      "display_order": 2,
+      "product_count": 120,
+      "sort_strategy": "sales_rank_desc",
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    }
+  ]
+}
