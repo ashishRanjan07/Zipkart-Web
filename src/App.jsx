@@ -8,6 +8,7 @@ import Toast from './components/ui/Toast';
 import Login from './pages/auth/Login';
 import OTPVerify from './pages/auth/OTPVerify';
 import ForgotPassword from './pages/auth/ForgotPassword';
+import ResetOTPVerify from './pages/auth/ResetOTPVerify';
 import ResetPassword from './pages/auth/ResetPassword';
 
 // Admin pages
@@ -36,6 +37,7 @@ export default function App() {
           <Route path="/auth/login"          element={<Login />} />
           <Route path="/auth/verify-otp"     element={<OTPVerify />} />
           <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+          <Route path="/auth/reset-otp"       element={<ResetOTPVerify />} />
           <Route path="/auth/reset-password"  element={<ResetPassword />} />
 
           {/* Protected admin routes */}
