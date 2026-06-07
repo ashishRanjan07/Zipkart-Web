@@ -1,0 +1,205 @@
+{
+  "_schema_meta": {
+    "primary_table": "flash_sales",
+    "related_tables": [
+      "flash_sale_products",
+      "flash_sale_user_purchases",
+      "flash_sale_notifications"
+    ],
+    "primary_key": "flash_sale_id",
+    "indexes": [
+      "status",
+      "start_time",
+      "end_time",
+      "created_by",
+      "is_deleted",
+      "composite: (status, start_time)"
+    ],
+    "enums": {
+      "status": ["draft", "pending_approval", "approved", "scheduled", "live", "paused", "ended", "cancelled", "rejected"],
+      "flash_sale_type": ["flat_discount", "percentage_discount", "bogo", "mystery_box", "combo_deal"],
+      "visibility": ["all_users", "app_only", "selected_segments", "gold_and_above", "pre_registered"],
+      "scope": ["all_stores", "specific_stores", "specific_cities", "specific_zones"],
+      "notification_channel": ["push", "sms", "email", "in_app", "whatsapp"]
+    },
+    "constraints": [
+      "start_time < end_time",
+      "total_budget >= 0",
+      "products array must have at least 1 item"
+    ]
+  },
+
+  "flash_sales": [
+    {
+      "flash_sale_id": "flash_evening_06jun",
+      "flash_sale_display_id": "FS-2026-06-0042",
+      "name": "Evening Rush - 6 PM Blast",
+      "description": "Up to 20% off on top grocery picks. Limited quantities. Grab fast!",
+      "terms_and_conditions": "Limited to 1000 units per product. Max 3 units per user. Offer valid for logged-in users only.",
+      "flash_sale_type": "flat_discount",
+      "visibility": "all_users",
+
+      "schedule": {
+        "date": "2026-06-07",
+        "start_time": "2026-06-07T18:00:00.000Z",
+        "end_time": "2026-06-07T20:00:00.000Z",
+        "duration_minutes": 120,
+        "timezone": "Asia/Kolkata",
+        "display_start_time_local": "2026-06-07 23:30 IST",
+        "display_end_time_local": "2026-06-08 01:30 IST"
+      },
+
+      "scope": "all_stores",
+      "applicable_dark_store_ids": [],
+      "applicable_cities": [],
+      "applicable_pincodes": [],
+
+      "user_segments": ["all_users"],
+      "pre_registration_enabled": false,
+      "pre_registered_users_count": 0,
+      "early_access_minutes_for_gold_plus": 0,
+
+      "status": "scheduled",
+      "approval_status": "approved",
+      "submitted_by": "adm_7h6g5f4e",
+      "submitted_at": "2026-06-06T10:00:00.000Z",
+      "approved_by": "adm_9f8a7b6c",
+      "approved_at": "2026-06-06T11:30:00.000Z",
+      "rejection_reason": null,
+
+      "total_budget": 50000.0,
+      "budget_consumed": 4485.0,
+      "budget_remaining": 45515.0,
+      "budget_alert_threshold_pct": 80,
+      "cost_center": "CC-FLASHSALES-001",
+
+      "notification_config": {
+        "send_pre_alert": true,
+        "pre_alert_minutes_before": 30,
+        "send_live_alert": true,
+        "send_ending_soon_alert": true,
+        "ending_soon_minutes_before": 15,
+        "channels": ["push", "in_app"],
+        "notification_campaign_id": "notif_flash_evening_06jun",
+        "pre_alert_sent": false,
+        "live_alert_sent": false
+      },
+
+      "analytics": {
+        "total_orders_generated": 0,
+        "total_units_sold": 0,
+        "total_revenue": 0.0,
+        "total_discount_given": 4485.0,
+        "unique_users_purchased": 0,
+        "avg_items_per_order": 0.0,
+        "conversion_rate_pct": 0.0
+      },
+
+      "created_by": "adm_7h6g5f4e",
+      "created_at": "2026-06-06T10:00:00.000Z",
+      "updated_by": "adm_9f8a7b6c",
+      "updated_at": "2026-06-06T11:30:00.000Z",
+      "is_deleted": false,
+      "version": 2,
+
+      "products": [
+        {
+          "flash_product_id": "fp_evening_milk",
+          "flash_sale_id": "flash_evening_06jun",
+          "product_id": "prod_amul_gold_milk_1l",
+          "variant_id": "var_amul_gold_milk_1l_std",
+          "sku": "AMK-GOLD-1L-001",
+          "product_name": "Amul Gold Full Cream Milk 1L",
+          "product_image_url": "https://cdn.zipkart.com/products/amul_gold_milk_1l_front.jpg",
+          "regular_mrp": 72.0,
+          "regular_selling_price": 68.0,
+          "flash_price": 55.0,
+          "flash_discount_amount": 13.0,
+          "flash_discount_pct": 19.12,
+          "min_price_guardrail": 54.0,
+          "allocated_quantity": 1000,
+          "sold_quantity": 345,
+          "remaining_quantity": 655,
+          "reserved_quantity": 12,
+          "max_per_user": 3,
+          "max_per_order": 3,
+          "is_active": true,
+          "sold_out": false,
+          "per_store_allocation": {
+            "ds_noida_sec62": 200,
+            "ds_noida_sec18": 150,
+            "ds_gurgaon_sector_30": 200
+          }
+        },
+        {
+          "flash_product_id": "fp_evening_coke",
+          "flash_sale_id": "flash_evening_06jun",
+          "product_id": "prod_coca_cola_2l",
+          "variant_id": "var_coca_cola_2l_pet",
+          "sku": "COKE-2L-PET-001",
+          "product_name": "Coca-Cola 2L Bottle",
+          "product_image_url": "https://cdn.zipkart.com/products/coke_2l.jpg",
+          "regular_mrp": 95.0,
+          "regular_selling_price": 90.0,
+          "flash_price": 75.0,
+          "flash_discount_amount": 15.0,
+          "flash_discount_pct": 16.67,
+          "min_price_guardrail": 72.0,
+          "allocated_quantity": 800,
+          "sold_quantity": 0,
+          "remaining_quantity": 800,
+          "reserved_quantity": 0,
+          "max_per_user": 2,
+          "max_per_order": 2,
+          "is_active": true,
+          "sold_out": false
+        }
+      ],
+
+      "admin_actions_available": [
+        "start_early",
+        "emergency_stop",
+        "add_products",
+        "increase_inventory",
+        "decrease_inventory",
+        "update_flash_price",
+        "extend_duration",
+        "send_notification",
+        "duplicate_sale",
+        "view_live_analytics"
+      ]
+    }
+  ],
+
+  "flash_sale_user_purchases_sample": [
+    {
+      "purchase_id": "fsp_001",
+      "flash_sale_id": "flash_morning_07jun",
+      "flash_product_id": "fp_morning_eggs",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "order_id": "ord_flash_abc001",
+      "quantity_purchased": 2,
+      "flash_price_applied": 55.0,
+      "total_paid": 110.0,
+      "discount_received": 26.0,
+      "purchased_at": "2026-06-07T09:00:05.000Z"
+    }
+  ],
+
+  "flash_sale_metrics_last_7_days": {
+    "total_flash_sales_run": 14,
+    "total_orders_generated": 28500,
+    "total_units_sold": 68400,
+    "total_revenue": 8550000.0,
+    "total_discount_given": 425000.0,
+    "roi": 4.41,
+    "avg_sell_through_rate_pct": 78.4,
+    "best_performing_sale": {
+      "flash_sale_id": "flash_morning_05jun",
+      "name": "Morning Freshness Deal",
+      "revenue": 1250000.0,
+      "orders": 4200,
+      "sell_through_pct": 95.0
+    }
+  }
+}

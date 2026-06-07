@@ -1,0 +1,268 @@
+{
+  "_schema_meta": {
+    "primary_table": "coupons",
+    "related_tables": [
+      "coupon_rules",
+      "coupon_usage_logs",
+      "coupon_budget_logs"
+    ],
+    "primary_key": "coupon_id",
+    "indexes": [
+      "coupon_code (UNIQUE)",
+      "status",
+      "coupon_type",
+      "valid_from",
+      "valid_to",
+      "created_by",
+      "is_deleted",
+      "composite: (status, valid_from, valid_to)"
+    ],
+    "enums": {
+      "coupon_type": ["flat_discount", "percentage_discount", "free_delivery", "cashback", "bogo", "buy_x_get_y", "tiered_discount"],
+      "discount_apply_on": ["cart_total", "specific_products", "specific_categories", "delivery_fee"],
+      "cashback_credit_to": ["wallet", "source_payment_method"],
+      "platform_restriction": ["all", "app_only", "web_only", "new_users_only"],
+      "status": ["draft", "active", "paused", "expired", "exhausted", "deleted"],
+      "user_segment": ["all", "new_users", "returning_users", "inactive_30days", "inactive_60days", "high_value", "gold_tier", "platinum_tier", "referral_users"],
+      "payment_method_restriction": ["all", "upi_only", "card_only", "wallet_only", "netbanking_only", "bnpl_only"]
+    },
+    "constraints": [
+      "coupon_code UNIQUE NOT NULL",
+      "discount_value >= 0",
+      "min_order_value >= 0",
+      "total_quantity >= 0",
+      "max_uses_per_user >= 1",
+      "valid_from < valid_to"
+    ]
+  },
+
+  "coupons": [
+    {
+      "coupon_id": "coup_flat50_june",
+      "coupon_code": "FLAT50",
+      "coupon_type": "flat_discount",
+      "display_title": "Flat Rs.50 Off",
+      "description": "Get flat Rs.50 off on orders above Rs.299. Valid for all users.",
+      "terms_and_conditions": "Valid on minimum cart value of Rs.299. Not applicable on liquor, tobacco, and baby products. One-time use per user per day. Cannot be clubbed with other coupons.",
+      "discount_apply_on": "cart_total",
+
+      "discount_value": 50.0,
+      "discount_pct": null,
+      "max_discount_cap": 50.0,
+      "min_order_value": 299.0,
+      "min_items_in_cart": 1,
+      "free_delivery": false,
+
+      "is_combinable_with_wallet": true,
+      "is_combinable_with_flash_sale": false,
+      "is_combinable_with_other_coupons": false,
+      "is_first_order_only": false,
+      "is_referral_coupon": false,
+      "is_auto_apply": false,
+
+      "platform_restriction": "all",
+      "payment_method_restriction": "all",
+      "min_app_version": "4.0.0",
+
+      "total_quantity": 50000,
+      "used_count": 28450,
+      "remaining": 21550,
+      "max_uses_per_user": 1,
+      "max_uses_per_user_per_day": 1,
+      "max_uses_per_user_per_week": 2,
+
+      "valid_from": "2026-06-01T00:00:00.000Z",
+      "valid_to": "2026-06-15T23:59:59.000Z",
+      "timezone": "Asia/Kolkata",
+
+      "user_segments": ["new_users", "inactive_30days"],
+      "exclude_user_ids": [],
+      "applicable_pincodes": ["110001", "110002", "201301", "201304"],
+      "applicable_dark_store_ids": ["all"],
+      "applicable_category_ids": ["all"],
+      "exclude_category_ids": ["cat_alcohol", "cat_tobacco"],
+      "applicable_product_ids": [],
+      "exclude_product_ids": [],
+      "applicable_brand_ids": [],
+
+      "budget_allocated": 2500000.0,
+      "budget_consumed": 1422500.0,
+      "budget_remaining": 1077500.0,
+      "budget_alert_threshold_pct": 80,
+      "cost_center": "CC-MARKETING-001",
+
+      "status": "active",
+      "is_deleted": false,
+
+      "analytics": {
+        "total_redemptions": 28450,
+        "unique_users": 26820,
+        "avg_order_value_with_coupon": 385.5,
+        "avg_order_value_without_coupon": 320.25,
+        "incremental_revenue_estimate": 3280000.0,
+        "total_discount_given": 1422500.0,
+        "conversion_rate_pct": 62.6
+      },
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-05-28T10:00:00.000Z",
+      "updated_by": "adm_9f8a7b6c",
+      "updated_at": "2026-06-07T08:00:00.000Z",
+      "approved_by": "adm_4e5f6a7b",
+      "approved_at": "2026-05-28T14:00:00.000Z",
+      "version": 3
+    },
+    {
+      "coupon_id": "coup_pct15_dairy",
+      "coupon_code": "DAIRY15",
+      "coupon_type": "percentage_discount",
+      "display_title": "15% Off on Dairy",
+      "description": "15% off on all Dairy & Eggs products. Max discount Rs.60.",
+      "terms_and_conditions": "Valid on Dairy & Eggs category only. Maximum discount Rs.60. Min cart value Rs.199.",
+      "discount_apply_on": "specific_categories",
+
+      "discount_value": null,
+      "discount_pct": 15.0,
+      "max_discount_cap": 60.0,
+      "min_order_value": 199.0,
+      "min_items_in_cart": 1,
+      "free_delivery": false,
+
+      "is_combinable_with_wallet": true,
+      "is_combinable_with_flash_sale": false,
+      "is_combinable_with_other_coupons": false,
+      "is_first_order_only": false,
+      "is_referral_coupon": false,
+      "is_auto_apply": false,
+
+      "platform_restriction": "app_only",
+      "payment_method_restriction": "all",
+      "min_app_version": "4.5.0",
+
+      "total_quantity": 20000,
+      "used_count": 4200,
+      "remaining": 15800,
+      "max_uses_per_user": 2,
+      "max_uses_per_user_per_day": 1,
+      "max_uses_per_user_per_week": 2,
+
+      "valid_from": "2026-06-01T00:00:00.000Z",
+      "valid_to": "2026-06-30T23:59:59.000Z",
+      "timezone": "Asia/Kolkata",
+
+      "user_segments": ["all"],
+      "applicable_category_ids": ["cat_dairy_eggs"],
+      "exclude_category_ids": [],
+
+      "budget_allocated": 1200000.0,
+      "budget_consumed": 252000.0,
+      "budget_remaining": 948000.0,
+      "budget_alert_threshold_pct": 80,
+      "cost_center": "CC-CATEGORY-001",
+
+      "status": "active",
+      "is_deleted": false,
+
+      "analytics": {
+        "total_redemptions": 4200,
+        "unique_users": 4100,
+        "avg_order_value_with_coupon": 320.0,
+        "total_discount_given": 252000.0
+      },
+
+      "created_by": "adm_7h6g5f4e",
+      "created_at": "2026-05-30T10:00:00.000Z",
+      "updated_by": "adm_7h6g5f4e",
+      "updated_at": "2026-06-01T00:00:00.000Z",
+      "approved_by": "adm_9f8a7b6c",
+      "approved_at": "2026-05-30T15:00:00.000Z",
+      "version": 1
+    },
+    {
+      "coupon_id": "coup_freedel_first",
+      "coupon_code": "FREESHIP",
+      "coupon_type": "free_delivery",
+      "display_title": "Free Delivery",
+      "description": "Free delivery on your first order. No minimum order value.",
+      "terms_and_conditions": "Valid on first order only. One-time use. Not applicable during surge hours.",
+      "discount_apply_on": "delivery_fee",
+
+      "discount_value": null,
+      "discount_pct": null,
+      "max_discount_cap": 30.0,
+      "min_order_value": 0.0,
+      "min_items_in_cart": 1,
+      "free_delivery": true,
+
+      "is_combinable_with_wallet": true,
+      "is_combinable_with_flash_sale": false,
+      "is_combinable_with_other_coupons": false,
+      "is_first_order_only": true,
+      "is_referral_coupon": false,
+      "is_auto_apply": true,
+
+      "platform_restriction": "app_only",
+      "payment_method_restriction": "all",
+
+      "total_quantity": 999999,
+      "used_count": 145200,
+      "remaining": 854799,
+      "max_uses_per_user": 1,
+      "max_uses_per_user_per_day": 1,
+      "max_uses_per_user_per_week": 1,
+
+      "valid_from": "2024-01-01T00:00:00.000Z",
+      "valid_to": "2026-12-31T23:59:59.000Z",
+      "timezone": "Asia/Kolkata",
+
+      "user_segments": ["new_users"],
+
+      "budget_allocated": 50000000.0,
+      "budget_consumed": 2904000.0,
+      "budget_remaining": 47096000.0,
+      "cost_center": "CC-GROWTH-001",
+
+      "status": "active",
+      "is_deleted": false,
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-01T00:00:00.000Z",
+      "updated_by": "adm_9f8a7b6c",
+      "updated_at": "2026-01-01T00:00:00.000Z",
+      "version": 5
+    }
+  ],
+
+  "coupon_usage_logs": [
+    {
+      "usage_log_id": "cul_flat50_001",
+      "coupon_id": "coup_flat50_june",
+      "coupon_code": "FLAT50",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "dark_store_id": "ds_noida_sec62",
+      "cart_value_before_discount": 418.0,
+      "discount_applied": 50.0,
+      "cart_value_after_discount": 368.0,
+      "used_at": "2026-06-06T21:15:00.000Z",
+      "was_reversed": false,
+      "reversed_at": null,
+      "reversal_reason": null
+    }
+  ],
+
+  "coupon_analytics_aggregate": {
+    "period": "2026-06-01 to 2026-06-07",
+    "total_coupons_active": 18,
+    "total_redemptions": 32650,
+    "unique_users_used": 30820,
+    "total_discount_given": 1674500.0,
+    "total_orders_with_coupon": 32650,
+    "total_orders_without_coupon": 14850,
+    "avg_order_value_with_coupon": 385.5,
+    "avg_order_value_without_coupon": 320.25,
+    "incremental_revenue_estimate": 4280000.0,
+    "coupon_fraud_cases_flagged": 12,
+    "coupon_fraud_amount_blocked": 8400.0
+  }
+}

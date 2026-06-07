@@ -1,0 +1,389 @@
+{
+  "_schema_meta": {
+    "primary_table": "inventory",
+    "related_tables": [
+      "inventory_batches",
+      "inventory_locations",
+      "stock_movements",
+      "purchase_orders",
+      "purchase_order_items",
+      "inventory_damage_log"
+    ],
+    "primary_key": "inventory_id",
+    "indexes": [
+      "composite: (dark_store_id, product_id, variant_id) UNIQUE",
+      "dark_store_id",
+      "product_id",
+      "variant_id",
+      "sku",
+      "status",
+      "quantity_available",
+      "reorder_point",
+      "last_updated_at"
+    ],
+    "enums": {
+      "inventory_status": ["in_stock", "low_stock", "out_of_stock", "unserviceable", "hold_qc", "expiring_soon", "expired"],
+      "stock_movement_type": [
+        "purchase_receipt",
+        "sale_deduction",
+        "manual_adjustment_add",
+        "manual_adjustment_remove",
+        "damage_write_off",
+        "expiry_write_off",
+        "inter_store_transfer_out",
+        "inter_store_transfer_in",
+        "return_from_customer",
+        "return_to_supplier",
+        "qc_hold",
+        "qc_release"
+      ],
+      "purchase_order_status": ["draft", "sent_to_supplier", "confirmed", "partially_received", "received", "cancelled"],
+      "adjustment_reason": [
+        "stock_count_correction",
+        "damage",
+        "expiry",
+        "theft",
+        "supplier_short_delivery",
+        "system_error_correction",
+        "inter_store_transfer",
+        "return_from_customer",
+        "promotional_sample"
+      ],
+      "storage_zone": ["ambient", "refrigerated_0_4C", "refrigerated_4_8C", "frozen_minus_18C", "frozen_minus_25C"]
+    },
+    "constraints": [
+      "composite (dark_store_id, variant_id) UNIQUE",
+      "dark_store_id FK -> dark_stores.store_id",
+      "product_id FK -> products.product_id",
+      "variant_id FK -> product_variants.variant_id"
+    ]
+  },
+
+  "admin_inventory_dashboard": {
+    "dark_store_id": "ds_noida_sec62",
+    "dark_store_name": "Zipkart - Noida Sector 62",
+    "last_updated_at": "2026-06-07T10:30:00.000Z",
+    "total_sku_count": 2847,
+    "active_sku_count": 2711,
+    "total_inventory_value_mrp": 2850000.0,
+    "total_inventory_value_cost": 2109000.0,
+    "low_stock_count": 87,
+    "out_of_stock_count": 28,
+    "expiring_in_7_days_count": 14,
+    "qc_hold_count": 5,
+    "unserviceable_count": 3,
+
+    "category_summary": [
+      {
+        "category_id": "cat_dairy_eggs",
+        "category": "Dairy & Eggs",
+        "sku_count": 124,
+        "total_value_cost": 84500.0,
+        "total_value_mrp": 112000.0,
+        "low_stock_count": 12,
+        "out_of_stock_count": 3,
+        "expiring_soon_count": 6
+      },
+      {
+        "category_id": "cat_fruits_vegetables",
+        "category": "Fruits & Vegetables",
+        "sku_count": 210,
+        "total_value_cost": 62000.0,
+        "total_value_mrp": 95000.0,
+        "low_stock_count": 18,
+        "out_of_stock_count": 8,
+        "expiring_soon_count": 22
+      },
+      {
+        "category_id": "cat_snacks",
+        "category": "Snacks",
+        "sku_count": 380,
+        "total_value_cost": 320000.0,
+        "total_value_mrp": 460000.0,
+        "low_stock_count": 14,
+        "out_of_stock_count": 5,
+        "expiring_soon_count": 2
+      }
+    ]
+  },
+
+  "inventory_item": {
+    "inventory_id": "inv_amk_gold_1l_ds_noida_sec62",
+    "dark_store_id": "ds_noida_sec62",
+    "dark_store_name": "Zipkart - Noida Sector 62",
+    "product_id": "prod_amul_gold_milk_1l",
+    "variant_id": "var_amul_gold_milk_1l_std",
+    "sku": "AMK-GOLD-1L-001",
+    "barcode_ean": "8901058007104",
+    "product_name": "Amul Gold Full Cream Milk 1L",
+    "brand": "Amul",
+    "category": "Dairy & Eggs",
+    "sub_category": "Milk",
+
+    "quantity_available": 545,
+    "quantity_reserved": 38,
+    "quantity_in_transit": 0,
+    "quantity_qc_hold": 0,
+    "quantity_damaged": 0,
+    "quantity_net_sellable": 507,
+
+    "reorder_point": 100,
+    "reorder_quantity": 500,
+    "max_stock_level": 1200,
+    "min_display_stock": 50,
+
+    "status": "in_stock",
+    "auto_reorder_enabled": true,
+    "auto_reorder_supplier_id": "sup_amul_distributor_noida",
+
+    "cost_price": 52.0,
+    "mrp": 72.0,
+    "selling_price": 68.0,
+    "currency": "INR",
+
+    "storage_zone": "refrigerated_4_8C",
+    "location_in_store": {
+      "aisle": "A",
+      "rack": "R3",
+      "shelf": "S2",
+      "bin": "B04"
+    },
+    "unit_of_measure": "each",
+    "weight_per_unit_grams": 1000,
+
+    "supplier_id": "sup_amul_distributor_noida",
+    "supplier_name": "Amul Distributor - Noida Branch",
+    "supplier_lead_time_days": 1,
+    "last_received_at": "2026-06-07T10:45:00.000Z",
+    "last_received_quantity": 500,
+    "last_received_batch": "BATCH-AMK-2601",
+
+    "last_sold_at": "2026-06-07T10:15:00.000Z",
+    "units_sold_today": 112,
+    "units_sold_last_7_days": 1240,
+    "avg_daily_sales_units": 177.14,
+    "days_of_stock_remaining": 2.86,
+
+    "last_stock_count_at": "2026-06-07T06:00:00.000Z",
+    "last_stock_count_by": "store_staff_emp_015",
+
+    "created_at": "2024-01-15T10:00:00.000Z",
+    "updated_at": "2026-06-07T10:45:00.000Z",
+    "updated_by": "adm_9f8a7b6c",
+    "version": 124
+  },
+
+  "inventory_batches": [
+    {
+      "batch_id": "ibatch_amk_2601",
+      "inventory_id": "inv_amk_gold_1l_ds_noida_sec62",
+      "dark_store_id": "ds_noida_sec62",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "batch_no": "BATCH-AMK-2601",
+      "lot_number": "LOT-2026-06-07",
+      "quantity_received": 500,
+      "quantity_remaining": 500,
+      "quantity_sold": 0,
+      "quantity_damaged": 0,
+      "quantity_expired_written_off": 0,
+      "cost_price_per_unit": 52.0,
+      "mrp": 72.0,
+      "manufactured_date": "2026-06-07",
+      "expiry_date": "2026-06-09",
+      "days_to_expiry": 2,
+      "is_expiring_soon": true,
+      "is_expired": false,
+      "storage_zone": "refrigerated_4_8C",
+      "purchase_order_id": "po_20260607_001",
+      "received_at": "2026-06-07T10:45:00.000Z",
+      "received_by": "store_staff_emp_010",
+      "qc_status": "passed",
+      "qc_checked_by": "store_staff_emp_015",
+      "qc_checked_at": "2026-06-07T10:50:00.000Z",
+      "created_at": "2026-06-07T10:45:00.000Z"
+    }
+  ],
+
+  "low_stock_alerts": [
+    {
+      "inventory_id": "inv_amk_gold_1l_ds_noida_sec62",
+      "sku": "AMK-GOLD-1L-001",
+      "product_name": "Amul Gold Full Cream Milk 1L",
+      "category": "Dairy & Eggs",
+      "quantity_available": 45,
+      "quantity_reserved": 8,
+      "quantity_net_sellable": 37,
+      "reorder_point": 100,
+      "avg_daily_sales": 177,
+      "days_of_stock_remaining": 0.21,
+      "reorder_quantity_suggested": 500,
+      "supplier": "Amul Distributor Noida",
+      "supplier_lead_time_days": 1,
+      "action_needed": "URGENT",
+      "auto_po_raised": true,
+      "po_id": "po_20260607_001"
+    }
+  ],
+
+  "out_of_stock_items": [
+    {
+      "inventory_id": "inv_maggi_12pk_ds_noida_sec62",
+      "sku": "MAGGI-2MIN-12PK",
+      "product_name": "Maggi 2-Minute Noodles Masala 12-Pack",
+      "category": "Instant Food",
+      "quantity_available": 0,
+      "last_sold_at": "2026-06-06T21:15:00.000Z",
+      "out_of_stock_since": "2026-06-06T22:00:00.000Z",
+      "expected_restock_at": "2026-06-08T00:00:00.000Z",
+      "lost_sales_today_units": 48,
+      "lost_sales_today_value": 6912.0,
+      "auto_po_raised": false,
+      "reason": "supplier_out_of_stock",
+      "alternate_sku_suggested": "MAGGI-2MIN-6PK"
+    }
+  ],
+
+  "batch_expiry_alerts": [
+    {
+      "batch_id": "ibatch_nestle_mp_001",
+      "inventory_id": "inv_nestle_milk_powder_ds_noida_sec62",
+      "sku": "NESTLE-MP-500G",
+      "product_name": "Nestle Everyday Dairy Whitener 500g",
+      "batch_no": "BATCH-2401",
+      "expiry_date": "2026-06-15",
+      "days_to_expiry": 8,
+      "quantity_remaining": 250,
+      "value_at_cost": 14750.0,
+      "value_at_mrp": 22500.0,
+      "recommended_action": "apply_discount_10pct",
+      "action_taken": null,
+      "action_taken_by": null,
+      "storage_zone": "ambient"
+    }
+  ],
+
+  "stock_movements": [
+    {
+      "movement_id": "sm_001_amk_receipt",
+      "inventory_id": "inv_amk_gold_1l_ds_noida_sec62",
+      "dark_store_id": "ds_noida_sec62",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "batch_id": "ibatch_amk_2601",
+      "movement_type": "purchase_receipt",
+      "quantity_change": 500,
+      "quantity_before": 45,
+      "quantity_after": 545,
+      "unit_cost": 52.0,
+      "total_cost": 26000.0,
+      "reference_id": "po_20260607_001",
+      "reference_type": "purchase_order",
+      "performed_by": "store_staff_emp_010",
+      "admin_approved_by": "adm_9f8a7b6c",
+      "notes": "Stock received from Amul distributor",
+      "created_at": "2026-06-07T10:45:00.000Z"
+    },
+    {
+      "movement_id": "sm_002_amk_sale",
+      "inventory_id": "inv_amk_gold_1l_ds_noida_sec62",
+      "dark_store_id": "ds_noida_sec62",
+      "product_id": "prod_amul_gold_milk_1l",
+      "variant_id": "var_amul_gold_milk_1l_std",
+      "batch_id": "ibatch_amk_2601",
+      "movement_type": "sale_deduction",
+      "quantity_change": -2,
+      "quantity_before": 545,
+      "quantity_after": 543,
+      "unit_cost": 52.0,
+      "total_cost": 104.0,
+      "reference_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+      "reference_type": "order",
+      "performed_by": "system_order_engine",
+      "admin_approved_by": null,
+      "notes": null,
+      "created_at": "2026-06-06T21:15:05.000Z"
+    }
+  ],
+
+  "purchase_orders": [
+    {
+      "po_id": "po_20260607_001",
+      "po_display_id": "PO-2026-06-0042",
+      "dark_store_id": "ds_noida_sec62",
+      "supplier_id": "sup_amul_distributor_noida",
+      "supplier_name": "Amul Distributor - Noida Branch",
+      "supplier_contact": "9999988001",
+      "status": "received",
+      "is_auto_generated": true,
+      "total_skus": 1,
+      "total_units": 500,
+      "total_cost": 26000.0,
+      "total_mrp": 36000.0,
+      "currency": "INR",
+      "created_by": "system_auto_reorder",
+      "created_at": "2026-06-07T08:00:00.000Z",
+      "sent_to_supplier_at": "2026-06-07T08:05:00.000Z",
+      "confirmed_by_supplier_at": "2026-06-07T09:00:00.000Z",
+      "expected_delivery_at": "2026-06-07T14:00:00.000Z",
+      "received_at": "2026-06-07T10:45:00.000Z",
+      "received_by": "store_staff_emp_010",
+      "approved_by": "adm_9f8a7b6c",
+      "approved_at": "2026-06-07T08:10:00.000Z",
+      "notes": "Auto-raised due to low stock alert",
+      "items": [
+        {
+          "po_item_id": "poi_001",
+          "po_id": "po_20260607_001",
+          "product_id": "prod_amul_gold_milk_1l",
+          "variant_id": "var_amul_gold_milk_1l_std",
+          "sku": "AMK-GOLD-1L-001",
+          "product_name": "Amul Gold Full Cream Milk 1L",
+          "quantity_ordered": 500,
+          "quantity_received": 500,
+          "quantity_shortage": 0,
+          "unit_cost": 52.0,
+          "total_cost": 26000.0,
+          "batch_no": "BATCH-AMK-2601",
+          "expiry_date": "2026-06-09"
+        }
+      ]
+    }
+  ],
+
+  "damage_log": [
+    {
+      "damage_id": "dmg_001",
+      "dark_store_id": "ds_noida_sec62",
+      "inventory_id": "inv_amk_gold_1l_ds_noida_sec62",
+      "batch_id": "ibatch_amk_2560",
+      "sku": "AMK-GOLD-1L-001",
+      "product_name": "Amul Gold Full Cream Milk 1L",
+      "quantity_damaged": 8,
+      "damage_type": "packaging_breach",
+      "damage_reason": "Crushed during delivery vehicle unloading",
+      "cost_value_lost": 416.0,
+      "mrp_value_lost": 576.0,
+      "reported_by": "store_staff_emp_010",
+      "verified_by": "adm_store_manager_01",
+      "insurance_claimed": false,
+      "insurance_claim_id": null,
+      "reported_at": "2026-06-06T18:00:00.000Z",
+      "created_at": "2026-06-06T18:05:00.000Z"
+    }
+  ],
+
+  "admin_actions_available": [
+    "bulk_upload_inventory",
+    "manual_stock_adjustment",
+    "mark_sku_unserviceable",
+    "inter_store_transfer",
+    "apply_discount_on_expiring",
+    "raise_purchase_order",
+    "approve_purchase_order",
+    "view_movement_history",
+    "export_inventory_report",
+    "schedule_stock_count",
+    "write_off_expired_stock"
+  ]
+}

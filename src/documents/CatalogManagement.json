@@ -1,0 +1,342 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["categories", "products", "product_variants", "brands"],
+    "related_tables": [
+      "product_media",
+      "product_attributes",
+      "product_tags",
+      "product_pricing_history",
+      "catalog_approval_requests"
+    ],
+    "enums": {
+      "product_status": ["draft", "pending_approval", "active", "inactive", "rejected", "discontinued", "out_of_season"],
+      "listing_type": ["standard", "weighted", "combo", "bundle", "fresh_produce"],
+      "gst_rate_pct": [0, 5, 12, 18, 28],
+      "media_type": ["image", "video", "360_view"],
+      "approval_status": ["pending", "approved", "rejected", "revision_requested"],
+      "storage_condition": ["ambient", "refrigerated", "frozen", "cool_and_dry"],
+      "age_restriction": ["none", "18_plus", "21_plus"]
+    },
+    "indexes": {
+      "products": ["product_id (PK)", "sku (UNIQUE)", "barcode_ean (UNIQUE)", "brand_id", "category_id", "status", "is_active", "created_at"],
+      "categories": ["category_id (PK)", "parent_category_id", "category_slug (UNIQUE)", "is_active"],
+      "brands": ["brand_id (PK)", "brand_slug (UNIQUE)", "is_active"]
+    }
+  },
+
+  "catalog_dashboard": {
+    "total_products": 12500,
+    "total_active_products": 11200,
+    "total_categories": 48,
+    "total_brands": 620,
+    "pending_approval": 145,
+    "draft_products": 78,
+    "inactive_products": 1300,
+    "discontinued_products": 320,
+    "bulk_operations_available": [
+      "bulk_price_update",
+      "bulk_category_change",
+      "bulk_disable",
+      "bulk_mark_out_of_stock",
+      "bulk_csv_import",
+      "bulk_csv_export",
+      "bulk_image_upload",
+      "bulk_tag_assignment"
+    ]
+  },
+
+  "category": {
+    "category_id": "cat_dairy_eggs",
+    "category_slug": "dairy-and-eggs",
+    "parent_category_id": null,
+    "parent_category_name": null,
+    "level": 1,
+    "name": "Dairy & Eggs",
+    "display_name": "Dairy & Eggs",
+    "description": "Fresh milk, cheese, butter, curd, paneer, eggs and more",
+    "image_url": "https://cdn.zipkart.com/categories/dairy_eggs.png",
+    "icon_url": "https://cdn.zipkart.com/categories/icons/dairy_eggs.svg",
+    "banner_url": "https://cdn.zipkart.com/categories/banners/dairy_eggs_banner.jpg",
+    "sort_order": 1,
+    "is_active": true,
+    "is_featured": true,
+    "seo_title": "Buy Dairy & Eggs Online - Fresh Milk, Cheese, Butter | Zipkart",
+    "seo_description": "Order fresh dairy products and eggs online with 10-minute delivery.",
+    "seo_keywords": ["milk delivery", "buy eggs online", "fresh paneer", "cheese delivery"],
+    "meta_canonical_url": "https://www.zipkart.com/c/dairy-and-eggs",
+    "requires_cold_storage": true,
+    "age_restriction": "none",
+    "commission_pct": 8.0,
+    "total_products": 124,
+    "active_products": 118,
+    "created_by": "adm_9f8a7b6c",
+    "created_at": "2024-01-15T10:00:00.000Z",
+    "updated_by": "adm_9f8a7b6c",
+    "updated_at": "2026-05-01T10:00:00.000Z",
+
+    "sub_categories": [
+      {
+        "category_id": "cat_milk",
+        "category_slug": "milk",
+        "parent_category_id": "cat_dairy_eggs",
+        "level": 2,
+        "name": "Milk",
+        "display_name": "Milk",
+        "sort_order": 1,
+        "is_active": true,
+        "total_products": 28,
+        "active_products": 26
+      },
+      {
+        "category_id": "cat_curd_yogurt",
+        "category_slug": "curd-yogurt",
+        "parent_category_id": "cat_dairy_eggs",
+        "level": 2,
+        "name": "Curd & Yogurt",
+        "sort_order": 2,
+        "is_active": true,
+        "total_products": 18,
+        "active_products": 17
+      }
+    ]
+  },
+
+  "brand": {
+    "brand_id": "brand_amul",
+    "brand_slug": "amul",
+    "brand_name": "Amul",
+    "brand_display_name": "Amul - The Taste of India",
+    "brand_logo_url": "https://cdn.zipkart.com/brands/amul_logo.png",
+    "brand_banner_url": "https://cdn.zipkart.com/brands/amul_banner.jpg",
+    "country_of_origin": "India",
+    "manufacturer_name": "Gujarat Co-operative Milk Marketing Federation Ltd",
+    "manufacturer_address": "Amul Dairy Road, Anand, Gujarat - 388001",
+    "fssai_license_number": "10012021001234",
+    "contact_email": "zipkart-catalog@amul.coop",
+    "contact_phone": "02692258506",
+    "is_active": true,
+    "is_featured": true,
+    "is_premium_brand": false,
+    "total_products": 87,
+    "created_at": "2024-01-15T10:00:00.000Z",
+    "updated_at": "2026-05-01T10:00:00.000Z"
+  },
+
+  "product": {
+    "product_id": "prod_amul_gold_milk_1l",
+    "product_display_id": "PROD-20240115-0001",
+    "sku": "AMK-GOLD-1L-001",
+    "barcode_ean": "8901058007104",
+    "barcode_upc": null,
+
+    "name": "Amul Gold Full Cream Milk 1L",
+    "display_name": "Amul Gold Full Cream Milk 1L",
+    "short_description": "Rich and creamy full cream milk with 6% fat content",
+    "long_description": "Amul Gold Full Cream Milk is India's most trusted milk brand with superior quality and taste. Contains 6% fat and 9% SNF. Packed in a tamper-proof poly-pack for maximum freshness.",
+    "bullet_points": [
+      "6% fat, 9% SNF for maximum creaminess",
+      "Pasteurized and homogenized",
+      "No preservatives, no added colour",
+      "Best before 2 days from packing date",
+      "Store below 8°C after opening"
+    ],
+
+    "brand_id": "brand_amul",
+    "brand_name": "Amul",
+    "category_id": "cat_milk",
+    "category_name": "Milk",
+    "parent_category_id": "cat_dairy_eggs",
+    "parent_category_name": "Dairy & Eggs",
+
+    "listing_type": "standard",
+    "is_active": true,
+    "status": "active",
+    "is_featured": false,
+    "is_bestseller": true,
+    "is_new_arrival": false,
+    "is_organic": false,
+    "is_vegan": false,
+    "is_vegetarian": true,
+    "is_gluten_free": false,
+
+    "mrp": 72.0,
+    "selling_price": 68.0,
+    "cost_price": 52.0,
+    "discount_pct": 5.56,
+    "discount_amount": 4.0,
+    "special_price": null,
+    "special_price_from": null,
+    "special_price_to": null,
+    "currency": "INR",
+
+    "gst_rate_pct": 5.0,
+    "gst_inclusive": true,
+    "hsn_code": "0401",
+    "cgst_pct": 2.5,
+    "sgst_pct": 2.5,
+    "igst_pct": 0.0,
+    "cess_pct": 0.0,
+
+    "weight_grams": 1000,
+    "weight_unit": "ml",
+    "weight_display": "1L / 1000ml",
+    "dimensions_cm": { "length": 7.5, "width": 5.0, "height": 22.0 },
+    "packaging_type": "tetra_pack",
+
+    "storage_condition": "refrigerated",
+    "storage_temperature_min_celsius": 2,
+    "storage_temperature_max_celsius": 8,
+    "shelf_life_days": 2,
+    "shelf_life_after_opening_hours": 48,
+
+    "country_of_origin": "India",
+    "manufacturer_name": "Gujarat Co-operative Milk Marketing Federation Ltd",
+    "manufacturer_address": "Amul Dairy Road, Anand, Gujarat - 388001",
+    "fssai_license_number": "10012021001234",
+    "importer_details": null,
+
+    "age_restriction": "none",
+    "requires_prescription": false,
+    "is_tobacco": false,
+    "is_alcohol": false,
+
+    "search_keywords": ["amul milk", "gold milk", "full cream milk", "1 litre milk", "amul gold"],
+    "seo_title": "Amul Gold Full Cream Milk 1L | Fresh Delivery in 10 min",
+    "seo_description": "Buy Amul Gold Full Cream Milk 1L online. Fresh delivery in 10 minutes.",
+    "seo_slug": "amul-gold-full-cream-milk-1l",
+
+    "avg_rating": 4.6,
+    "total_reviews": 1842,
+    "total_orders": 48200,
+
+    "submitted_by": "cat_manager_priya",
+    "approved_by": "adm_9f8a7b6c",
+    "approved_at": "2024-01-20T12:00:00.000Z",
+    "rejection_reason": null,
+    "created_at": "2024-01-15T10:00:00.000Z",
+    "updated_at": "2026-06-01T10:00:00.000Z",
+    "created_by": "cat_manager_priya",
+    "updated_by": "cat_manager_kavya",
+    "version": 8,
+
+    "variants": [
+      {
+        "variant_id": "var_amul_gold_milk_1l_std",
+        "product_id": "prod_amul_gold_milk_1l",
+        "variant_name": "1L - Standard Pack",
+        "sku": "AMK-GOLD-1L-001",
+        "barcode_ean": "8901058007104",
+        "mrp": 72.0,
+        "selling_price": 68.0,
+        "cost_price": 52.0,
+        "weight_grams": 1000,
+        "weight_display": "1L",
+        "is_default": true,
+        "is_active": true,
+        "stock_quantity": 545,
+        "min_order_qty": 1,
+        "max_order_qty": 5
+      },
+      {
+        "variant_id": "var_amul_gold_milk_500ml",
+        "product_id": "prod_amul_gold_milk_1l",
+        "variant_name": "500ml - Pouch",
+        "sku": "AMK-GOLD-500ML-002",
+        "barcode_ean": "8901058007098",
+        "mrp": 38.0,
+        "selling_price": 36.0,
+        "cost_price": 28.0,
+        "weight_grams": 500,
+        "weight_display": "500ml",
+        "is_default": false,
+        "is_active": true,
+        "stock_quantity": 200,
+        "min_order_qty": 1,
+        "max_order_qty": 10
+      }
+    ],
+
+    "media": [
+      {
+        "media_id": "med_amul_gold_milk_1l_001",
+        "product_id": "prod_amul_gold_milk_1l",
+        "type": "image",
+        "url": "https://cdn.zipkart.com/products/amul_gold_milk_1l_front.jpg",
+        "thumbnail_url": "https://cdn.zipkart.com/products/thumb/amul_gold_milk_1l_front.jpg",
+        "alt_text": "Amul Gold Full Cream Milk 1L - Front",
+        "is_primary": true,
+        "sort_order": 1,
+        "created_at": "2024-01-15T10:00:00.000Z"
+      },
+      {
+        "media_id": "med_amul_gold_milk_1l_002",
+        "product_id": "prod_amul_gold_milk_1l",
+        "type": "image",
+        "url": "https://cdn.zipkart.com/products/amul_gold_milk_1l_nutrition.jpg",
+        "thumbnail_url": "https://cdn.zipkart.com/products/thumb/amul_gold_milk_1l_nutrition.jpg",
+        "alt_text": "Amul Gold Full Cream Milk 1L - Nutrition Facts",
+        "is_primary": false,
+        "sort_order": 2,
+        "created_at": "2024-01-15T10:00:00.000Z"
+      }
+    ],
+
+    "attributes": [
+      { "attribute_key": "fat_content", "attribute_label": "Fat Content", "attribute_value": "6%", "unit": null },
+      { "attribute_key": "snf", "attribute_label": "SNF (Solid Non-Fat)", "attribute_value": "9%", "unit": null },
+      { "attribute_key": "energy_kcal", "attribute_label": "Energy per 100ml", "attribute_value": "62", "unit": "kcal" },
+      { "attribute_key": "protein_g", "attribute_label": "Protein per 100ml", "attribute_value": "3.3", "unit": "g" },
+      { "attribute_key": "carbohydrate_g", "attribute_label": "Carbohydrates per 100ml", "attribute_value": "4.9", "unit": "g" },
+      { "attribute_key": "calcium_mg", "attribute_label": "Calcium per 100ml", "attribute_value": "120", "unit": "mg" }
+    ],
+
+    "tags": ["dairy", "milk", "breakfast", "daily-need", "amul", "tetra-pack", "full-cream", "bestseller"],
+
+    "pricing_history": [
+      {
+        "history_id": "ph_001",
+        "product_id": "prod_amul_gold_milk_1l",
+        "mrp": 68.0,
+        "selling_price": 65.0,
+        "effective_from": "2024-01-15T00:00:00.000Z",
+        "effective_to": "2026-04-30T23:59:59.000Z",
+        "changed_by": "cat_manager_priya",
+        "change_reason": "launch_price"
+      },
+      {
+        "history_id": "ph_002",
+        "product_id": "prod_amul_gold_milk_1l",
+        "mrp": 72.0,
+        "selling_price": 68.0,
+        "effective_from": "2026-05-01T00:00:00.000Z",
+        "effective_to": null,
+        "changed_by": "cat_manager_kavya",
+        "change_reason": "mrp_revision_by_brand"
+      }
+    ]
+  },
+
+  "catalog_approval_request": {
+    "request_id": "apr_001_new_lays",
+    "product_id": "prod_12345",
+    "product_name": "New Lay's Chips Cream & Onion 75g",
+    "brand_id": "brand_pepsico",
+    "category_id": "cat_snacks",
+    "submitted_by_admin_id": "cat_manager_priya",
+    "submitted_at": "2026-06-06T18:00:00.000Z",
+    "approval_status": "pending",
+    "reviewer_admin_id": null,
+    "reviewed_at": null,
+    "rejection_reason": null,
+    "revision_notes": null,
+    "mrp": 30.0,
+    "selling_price": 25.0,
+    "checklist": {
+      "images_uploaded": true,
+      "gst_info_complete": true,
+      "fssai_verified": true,
+      "legal_review_done": false,
+      "pricing_reviewed": false
+    }
+  }
+}

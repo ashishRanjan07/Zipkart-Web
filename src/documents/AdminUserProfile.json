@@ -1,0 +1,373 @@
+{
+  "_schema_meta": {
+    "primary_table": "admin_users",
+    "related_tables": [
+      "admin_sessions",
+      "admin_login_history",
+      "admin_store_assignments",
+      "admin_password_history",
+      "admin_mfa_backup_codes"
+    ],
+    "primary_key": "admin_id",
+    "indexes": [
+      "email (UNIQUE)",
+      "employee_id (UNIQUE)",
+      "phone_number (UNIQUE)",
+      "role_id",
+      "account_status",
+      "department",
+      "assigned_city"
+    ],
+    "enums": {
+      "account_status": ["active", "suspended", "inactive", "deleted", "pending_setup"],
+      "mfa_type": ["totp", "sms", "email", "hardware_key"],
+      "access_level": ["global", "zonal", "store_level", "read_only"],
+      "data_scope": ["all_dark_stores", "assigned_dark_stores", "assigned_city", "assigned_zone"],
+      "gender": ["M", "F", "Other", "Prefer not to say"],
+      "session_status": ["active", "expired", "revoked"]
+    },
+    "constraints": [
+      "email UNIQUE NOT NULL",
+      "employee_id UNIQUE NOT NULL",
+      "phone_number UNIQUE NOT NULL",
+      "role_id FK -> roles.role_id",
+      "reporting_manager_id FK -> admin_users.admin_id (self-referential, nullable)"
+    ]
+  },
+
+  "admin_id": "adm_9f8a7b6c-5d4e-3f2a-1b0c-9d8e7f6a5b4c",
+  "employee_id": "ZIPKART/ADMIN/0042",
+  "email": "rajesh.kumar@zipkart.com",
+  "phone_number": "9999999001",
+  "country_code": "+91",
+  "password_hash": "$2b$12$AbCdEfGhIjKlMnOpQrStUuWxYz1234567890ABCDEFGHIJKLMN",
+  "password_salt": "randomSaltValue16BytesHex",
+  "password_last_changed_at": "2026-04-15T11:00:00.000Z",
+  "require_password_change": false,
+  "password_history": [
+    {
+      "hash": "$2b$12$OldHash1AbCdEfGhIjKlMnOpQrStUuWxYz1234567890",
+      "changed_at": "2026-01-10T09:00:00.000Z"
+    },
+    {
+      "hash": "$2b$12$OldHash2AbCdEfGhIjKlMnOpQrStUuWxYz1234567890",
+      "changed_at": "2025-10-05T14:30:00.000Z"
+    },
+    {
+      "hash": "$2b$12$OldHash3AbCdEfGhIjKlMnOpQrStUuWxYz1234567890",
+      "changed_at": "2025-07-20T10:15:00.000Z"
+    }
+  ],
+
+  "first_name": "Rajesh",
+  "last_name": "Kumar",
+  "display_name": "Rajesh Kumar",
+  "display_picture_url": "https://zipkart-admin.s3.ap-south-1.amazonaws.com/avatars/adm_9f8a7b6c.jpg",
+  "display_picture_thumbnail_url": "https://zipkart-admin.s3.ap-south-1.amazonaws.com/avatars/thumb_adm_9f8a7b6c.jpg",
+  "date_of_birth": "1988-05-12",
+  "gender": "M",
+  "timezone": "Asia/Kolkata",
+  "locale": "en-IN",
+  "profile_completion_pct": 100,
+
+  "role_id": "role_super_admin",
+  "role_name": "Super Administrator",
+  "role_level": 1,
+
+  "department": "Operations & Platform Management",
+  "designation": "Senior Operations Manager",
+  "reporting_manager_id": "adm_8e7d6c5b-4a3f-2e1d-0c9b-8a7d6e5f4c3b",
+  "reporting_manager_name": "Suresh Mehta",
+  "cost_center": "CC-OPS-001",
+
+  "assigned_dark_store_ids": [
+    "ds_noida_sec62",
+    "ds_noida_sec18",
+    "ds_gurgaon_sector_30"
+  ],
+  "assigned_city": "Delhi NCR",
+  "assigned_zone": "Zone_A_North",
+  "assigned_region": "North India",
+
+  "permissions": {
+    "orders": {
+      "view": true,
+      "view_sensitive": true,
+      "cancel": true,
+      "refund": true,
+      "modify_delivery": true,
+      "view_customer_pii": true,
+      "force_complete": true,
+      "reassign_partner": true,
+      "export": true
+    },
+    "inventory": {
+      "view": true,
+      "create": true,
+      "update": true,
+      "delete": true,
+      "bulk_upload": true,
+      "adjust_stock": true,
+      "view_cost_price": true,
+      "mark_unserviceable": true,
+      "transfer_between_stores": true,
+      "approve_purchase_orders": true,
+      "export": true
+    },
+    "dark_stores": {
+      "view": true,
+      "create": true,
+      "update": true,
+      "delete": true,
+      "assign_manager": true,
+      "configure_slots": true,
+      "configure_pincodes": true,
+      "emergency_shutdown": true,
+      "view_financials": true
+    },
+    "partners": {
+      "view": true,
+      "onboard": true,
+      "update_kyc": true,
+      "commission_config": true,
+      "payout_approve": true,
+      "block_unblock": true,
+      "view_location": true,
+      "view_earnings": true,
+      "export": true
+    },
+    "catalog": {
+      "view": true,
+      "create_category": true,
+      "edit_category": true,
+      "delete_category": true,
+      "add_products": true,
+      "update_price": true,
+      "update_images": true,
+      "bulk_import": true,
+      "approve_listing": true,
+      "manage_brands": true,
+      "export": true
+    },
+    "payments": {
+      "view": true,
+      "refund_approve": true,
+      "settlement_view": true,
+      "adjust_wallet": true,
+      "view_payment_gateway_keys": false,
+      "fraud_analysis": true,
+      "dispute_management": true,
+      "export": true
+    },
+    "coupons": {
+      "view": true,
+      "create": true,
+      "edit": true,
+      "delete": true,
+      "audit_log": true,
+      "budget_control": true,
+      "apply_to_users": true,
+      "export": true
+    },
+    "flash_sales": {
+      "view": true,
+      "create": true,
+      "schedule": true,
+      "manage_inventory": true,
+      "set_prices": true,
+      "view_analytics": true,
+      "emergency_stop": true,
+      "export": true
+    },
+    "notifications": {
+      "view": true,
+      "create_push": true,
+      "create_email": true,
+      "create_sms": true,
+      "create_in_app": true,
+      "schedule": true,
+      "target_segments": true,
+      "view_analytics": true,
+      "manage_templates": true,
+      "export": true
+    },
+    "users": {
+      "view": true,
+      "view_sensitive": true,
+      "block_unblock": true,
+      "reset_verification": true,
+      "adjust_wallet": true,
+      "view_login_history": true,
+      "impersonate": false,
+      "delete_account": false,
+      "export": true
+    },
+    "reports": {
+      "view_daily": true,
+      "export": true,
+      "view_financial": true,
+      "view_customer_metrics": true,
+      "schedule_reports": true,
+      "view_partner_reports": true
+    },
+    "system": {
+      "manage_admins": true,
+      "audit_logs": true,
+      "ip_whitelist": true,
+      "maintenance_mode": true,
+      "view_server_health": true,
+      "manage_roles": true,
+      "app_config": true
+    },
+    "analytics": {
+      "view": true,
+      "view_financial": true,
+      "view_operational": true,
+      "export": true
+    }
+  },
+
+  "mfa_enabled": true,
+  "mfa_type": "totp",
+  "mfa_secret_encrypted": "AES256:ENC:JbswY3DPEHPK3PXP_encrypted_representation",
+  "mfa_enrolled_at": "2024-01-15T12:30:00.000Z",
+  "mfa_last_verified_at": "2026-06-07T09:30:05.000Z",
+  "mfa_backup_codes": [
+    { "code_hash": "$2b$10$backuphash1...", "used": false, "used_at": null },
+    { "code_hash": "$2b$10$backuphash2...", "used": false, "used_at": null },
+    { "code_hash": "$2b$10$backuphash3...", "used": true, "used_at": "2026-03-20T08:00:00.000Z" },
+    { "code_hash": "$2b$10$backuphash4...", "used": false, "used_at": null },
+    { "code_hash": "$2b$10$backuphash5...", "used": false, "used_at": null }
+  ],
+  "mfa_backup_codes_regenerated_at": "2026-03-20T08:05:00.000Z",
+
+  "ip_whitelist": ["103.58.154.0/24", "10.0.0.0/8", "192.168.1.0/24"],
+  "ip_whitelist_enabled": true,
+  "last_login_ip": "103.58.154.100",
+  "last_login_at": "2026-06-07T09:30:00.000Z",
+  "last_login_user_agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+  "last_login_device": "MacBook Pro",
+  "last_login_os": "macOS 14.2",
+
+  "account_status": "active",
+  "account_status_reason": null,
+  "suspended_at": null,
+  "suspended_by": null,
+  "suspension_reason": null,
+  "is_deleted": false,
+  "deleted_at": null,
+  "deleted_by": null,
+
+  "login_attempts": 0,
+  "login_attempts_reset_at": "2026-06-07T09:30:00.000Z",
+  "is_locked": false,
+  "locked_at": null,
+  "locked_until": null,
+  "max_login_attempts": 5,
+  "lockout_duration_minutes": 30,
+
+  "session_timeout_minutes": 30,
+  "max_concurrent_sessions": 2,
+  "current_active_session_count": 1,
+
+  "access_level": "global",
+  "data_scope": "all_dark_stores",
+
+  "onboarding_completed": true,
+  "onboarding_completed_at": "2024-01-15T16:00:00.000Z",
+  "onboarding_steps_completed": [
+    "profile_setup",
+    "mfa_enrollment",
+    "ip_whitelist_setup",
+    "role_acknowledgment",
+    "security_training"
+  ],
+
+  "notification_preferences": {
+    "email_alerts": true,
+    "sms_alerts": true,
+    "push_alerts": true,
+    "critical_issues_only": false,
+    "daily_digest": true,
+    "weekly_report": true,
+    "alert_thresholds": {
+      "inventory_critical_pct": 10,
+      "order_backlog_count": 50,
+      "delivery_failure_rate_pct": 5,
+      "payment_failure_rate_pct": 3,
+      "partner_offline_pct": 20
+    },
+    "quiet_hours": {
+      "enabled": true,
+      "start": "23:00",
+      "end": "07:00",
+      "timezone": "Asia/Kolkata",
+      "override_for_critical": true
+    }
+  },
+
+  "emergency_contact": {
+    "name": "Sunita Kumar",
+    "relationship": "Spouse",
+    "phone": "9999992002",
+    "email": "sunita.kumar@example.com"
+  },
+
+  "active_sessions": [
+    {
+      "session_id": "sess_abc123def456",
+      "device": "MacBook Pro",
+      "os": "macOS 14.2",
+      "browser": "Chrome 125",
+      "ip_address": "103.58.154.100",
+      "login_at": "2026-06-07T09:30:00.000Z",
+      "last_activity_at": "2026-06-07T10:40:00.000Z",
+      "expires_at": "2026-06-07T11:00:00.000Z",
+      "status": "active"
+    }
+  ],
+
+  "recent_login_history": [
+    {
+      "login_id": "login_20260607_001",
+      "ip_address": "103.58.154.100",
+      "device": "MacBook Pro",
+      "os": "macOS 14.2",
+      "browser": "Chrome 125",
+      "status": "success",
+      "mfa_used": true,
+      "login_at": "2026-06-07T09:30:00.000Z",
+      "logout_at": null
+    },
+    {
+      "login_id": "login_20260606_001",
+      "ip_address": "103.58.154.100",
+      "device": "MacBook Pro",
+      "os": "macOS 14.2",
+      "browser": "Chrome 125",
+      "status": "success",
+      "mfa_used": true,
+      "login_at": "2026-06-06T09:15:00.000Z",
+      "logout_at": "2026-06-06T18:30:00.000Z"
+    },
+    {
+      "login_id": "login_20260605_002",
+      "ip_address": "192.168.1.50",
+      "device": "Unknown Device",
+      "os": "Windows 11",
+      "browser": "Edge 124",
+      "status": "blocked_ip_not_whitelisted",
+      "mfa_used": false,
+      "login_at": "2026-06-05T21:45:00.000Z",
+      "logout_at": null
+    }
+  ],
+
+  "created_by": "system_bootstrap",
+  "created_at": "2024-01-15T10:00:00.000Z",
+  "updated_by": "adm_9f8a7b6c-5d4e-3f2a-1b0c-9d8e7f6a5b4c",
+  "updated_at": "2026-06-07T09:30:00.000Z",
+  "is_deleted_soft": false,
+  "version": 14,
+  "version_updated_at": "2026-06-07T09:30:00.000Z"
+}

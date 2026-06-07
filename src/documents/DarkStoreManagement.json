@@ -1,0 +1,236 @@
+{
+  "_schema_meta": {
+    "primary_table": "dark_stores",
+    "related_tables": [
+      "store_pincodes",
+      "store_documents",
+      "store_sla_config",
+      "store_operating_hours",
+      "store_equipment",
+      "store_bank_accounts",
+      "store_performance_snapshots"
+    ],
+    "primary_key": "store_id",
+    "indexes": [
+      "store_code (UNIQUE)",
+      "status",
+      "city",
+      "zone",
+      "manager_id",
+      "is_active",
+      "composite: (latitude, longitude) for geospatial queries"
+    ],
+    "enums": {
+      "status": ["active", "inactive", "under_maintenance", "temporarily_closed", "permanently_closed", "setup_in_progress"],
+      "store_type": ["dark_store", "fulfillment_hub", "micro_dark_store"],
+      "ownership_type": ["owned", "leased", "partner_operated"],
+      "document_type": ["fssai_license", "gstin_certificate", "shop_act_license", "trade_license", "fire_noc", "lease_agreement", "electricity_bill"],
+      "document_status": ["valid", "expiring_soon", "expired", "not_uploaded", "under_review"],
+      "equipment_type": ["refrigerator", "deep_freezer", "conveyor_belt", "barcode_scanner", "label_printer", "weighing_scale", "cctv_camera", "ups_battery", "fire_extinguisher", "first_aid_kit"]
+    },
+    "constraints": [
+      "store_code UNIQUE NOT NULL",
+      "gstin UNIQUE NOT NULL",
+      "manager_id FK -> admin_users.admin_id (nullable)"
+    ]
+  },
+
+  "dark_stores": [
+    {
+      "store_id": "ds_noida_sec62",
+      "store_code": "ZIP-NOIDA-SEC62-001",
+      "store_name": "Zipkart - Noida Sector 62",
+      "store_type": "dark_store",
+      "ownership_type": "leased",
+      "status": "active",
+
+      "address": {
+        "building_name": "Ground Floor, Plot No. 45",
+        "street": "Block A, Sector 62",
+        "landmark": "Near HDFC Bank ATM",
+        "area": "Sector 62",
+        "city": "Noida",
+        "district": "Gautam Buddha Nagar",
+        "state": "Uttar Pradesh",
+        "state_code": "UP",
+        "country": "India",
+        "country_code": "IN",
+        "pincode": "201301"
+      },
+      "latitude": 28.6139,
+      "longitude": 77.209,
+      "geofence_radius_meters": 200,
+      "delivery_radius_km": 3.5,
+      "area_sq_ft": 2800,
+      "storage_capacity_units": 15000,
+
+      "gstin": "09AAACB2230M1Z3",
+      "pan": "AAACB2230M",
+      "fssai_license_number": "11221332000123",
+      "fssai_license_expiry": "2027-06-30",
+      "shop_act_license_number": "SHOP/UP/2024/001234",
+
+      "manager_id": "adm_store_manager_01",
+      "manager_name": "Vikram Singh",
+      "manager_phone": "9999901234",
+      "manager_email": "vikram.singh@zipkart.com",
+
+      "staff_count": 42,
+      "pickers_count": 20,
+      "packers_count": 8,
+      "ops_staff_count": 14,
+
+      "operational_hours": {
+        "is_24x7": false,
+        "weekday": { "open": "06:00", "close": "23:59" },
+        "weekend": { "open": "06:00", "close": "23:59" },
+        "holidays": { "open": "08:00", "close": "22:00" }
+      },
+      "busy_hours_slots": ["08:00-10:00", "12:00-14:00", "19:00-21:00"],
+      "holiday_list": ["2026-01-26", "2026-08-15", "2026-10-02", "2026-10-20", "2026-11-01"],
+      "timezone": "Asia/Kolkata",
+
+      "pincodes_served": ["201301", "201304", "201306", "201307", "201309", "201310"],
+      "active_delivery_zones": ["Zone_A_North_Noida_1", "Zone_A_North_Noida_2"],
+
+      "sla_config": {
+        "target_delivery_minutes": 12,
+        "max_delivery_minutes": 20,
+        "picking_sla_minutes": 5,
+        "packing_sla_minutes": 2,
+        "last_mile_sla_minutes": 8,
+        "surge_multiplier_max": 1.5,
+        "surge_delivery_fee_max": 40.0,
+        "slots": [
+          { "slot_id": "slot_express_10min", "label": "Express 10 min", "base_fee": 0.0, "min_order_value": 199.0, "is_active": true },
+          { "slot_id": "slot_standard_15min", "label": "Standard 15 min", "base_fee": 0.0, "min_order_value": 99.0, "is_active": true }
+        ]
+      },
+
+      "capacity_config": {
+        "daily_order_capacity": 3500,
+        "peak_hour_capacity_per_hour": 450,
+        "concurrent_pickers_max": 20,
+        "auto_throttle_at_capacity_pct": 90,
+        "cod_enabled": true,
+        "cod_max_per_order": 2000.0
+      },
+
+      "inventory_config": {
+        "total_sku_count": 2847,
+        "active_sku_count": 2711,
+        "storage_zones": ["ambient", "refrigerated_4_8C", "refrigerated_0_4C", "frozen_minus_18C"],
+        "cold_storage_capacity_units": 3000,
+        "freezer_capacity_units": 800,
+        "inventory_value_cost": 2109000.0,
+        "inventory_value_mrp": 2850000.0
+      },
+
+      "performance_today": {
+        "current_capacity_utilization_pct": 78,
+        "avg_order_processing_time_minutes": 4.2,
+        "current_active_orders": 187,
+        "orders_delivered_today": 2503,
+        "sla_breach_count_today": 14,
+        "sla_breach_rate_pct": 0.56,
+        "avg_delivery_time_minutes": 11.2,
+        "partner_online_count": 156,
+        "orders_per_partner": 16.1
+      },
+
+      "bank_account": {
+        "bank_account_id": "ba_ds_noida_sec62",
+        "account_holder_name": "Zipkart Pvt Ltd",
+        "bank_name": "HDFC Bank",
+        "account_number_masked": "50200*****1234",
+        "ifsc_code": "HDFC0001234",
+        "account_type": "current",
+        "is_primary": true,
+        "is_verified": true,
+        "verified_at": "2024-01-20T10:00:00.000Z"
+      },
+
+      "documents": [
+        {
+          "document_id": "doc_ds_noida_fssai",
+          "store_id": "ds_noida_sec62",
+          "document_type": "fssai_license",
+          "document_number": "11221332000123",
+          "document_url": "https://zipkart-docs.s3.ap-south-1.amazonaws.com/stores/ds_noida_sec62/fssai.pdf",
+          "issued_date": "2024-07-01",
+          "expiry_date": "2027-06-30",
+          "status": "valid",
+          "days_to_expiry": 388,
+          "uploaded_by": "adm_9f8a7b6c",
+          "uploaded_at": "2024-01-20T10:00:00.000Z"
+        },
+        {
+          "document_id": "doc_ds_noida_gst",
+          "store_id": "ds_noida_sec62",
+          "document_type": "gstin_certificate",
+          "document_number": "09AAACB2230M1Z3",
+          "document_url": "https://zipkart-docs.s3.ap-south-1.amazonaws.com/stores/ds_noida_sec62/gst_cert.pdf",
+          "issued_date": "2024-01-10",
+          "expiry_date": null,
+          "status": "valid",
+          "days_to_expiry": null,
+          "uploaded_by": "adm_9f8a7b6c",
+          "uploaded_at": "2024-01-20T10:00:00.000Z"
+        },
+        {
+          "document_id": "doc_ds_noida_fire_noc",
+          "store_id": "ds_noida_sec62",
+          "document_type": "fire_noc",
+          "document_number": "NOC/FIRE/NOIDA/2024/0045",
+          "document_url": "https://zipkart-docs.s3.ap-south-1.amazonaws.com/stores/ds_noida_sec62/fire_noc.pdf",
+          "issued_date": "2024-01-15",
+          "expiry_date": "2026-07-01",
+          "status": "expiring_soon",
+          "days_to_expiry": 24,
+          "uploaded_by": "adm_9f8a7b6c",
+          "uploaded_at": "2024-01-20T10:00:00.000Z"
+        }
+      ],
+
+      "equipment": [
+        { "equipment_id": "eq_fridge_01", "type": "refrigerator", "brand": "Voltas", "model": "VCSC250SH", "quantity": 4, "status": "operational", "last_serviced_at": "2026-04-01T10:00:00.000Z" },
+        { "equipment_id": "eq_freezer_01", "type": "deep_freezer", "brand": "Blue Star", "model": "CHFSD150A", "quantity": 2, "status": "operational", "last_serviced_at": "2026-04-01T10:00:00.000Z" },
+        { "equipment_id": "eq_scanner_01", "type": "barcode_scanner", "brand": "Zebra", "model": "DS2208", "quantity": 12, "status": "operational", "last_serviced_at": null },
+        { "equipment_id": "eq_scale_01", "type": "weighing_scale", "brand": "Phoenix", "model": "DWS-100", "quantity": 6, "status": "operational", "last_serviced_at": "2026-03-15T10:00:00.000Z" },
+        { "equipment_id": "eq_cctv_01", "type": "cctv_camera", "brand": "Hikvision", "model": "DS-2CD2143G2", "quantity": 16, "status": "operational", "last_serviced_at": "2026-01-01T10:00:00.000Z" },
+        { "equipment_id": "eq_ups_01", "type": "ups_battery", "brand": "APC", "model": "SMT1000I", "quantity": 2, "status": "operational", "last_serviced_at": "2026-02-01T10:00:00.000Z" }
+      ],
+
+      "lease_details": {
+        "landlord_name": "Sunita Properties Pvt Ltd",
+        "lease_start_date": "2024-01-01",
+        "lease_end_date": "2029-12-31",
+        "monthly_rent_inr": 180000.0,
+        "security_deposit_inr": 540000.0,
+        "rent_escalation_pct_per_year": 5.0,
+        "notice_period_days": 90
+      },
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_by": "adm_store_manager_01",
+      "updated_at": "2026-06-07T09:00:00.000Z",
+      "version": 22,
+
+      "admin_actions_available": [
+        "edit_store_details",
+        "assign_manager",
+        "update_pincodes",
+        "configure_sla_slots",
+        "emergency_shutdown",
+        "update_operating_hours",
+        "view_store_performance",
+        "view_inventory",
+        "manage_documents",
+        "manage_equipment",
+        "view_financials",
+        "add_delivery_zone"
+      ]
+    }
+  ]
+}

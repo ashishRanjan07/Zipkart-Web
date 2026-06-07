@@ -1,0 +1,256 @@
+{
+  "_schema_meta": {
+    "primary_table": "notification_campaigns",
+    "related_tables": [
+      "notification_templates",
+      "notification_delivery_logs",
+      "notification_analytics",
+      "notification_opt_outs",
+      "notification_ab_tests"
+    ],
+    "primary_key": "campaign_id",
+    "indexes": [
+      "status",
+      "campaign_type",
+      "channel",
+      "send_at",
+      "created_by",
+      "is_deleted",
+      "composite: (status, send_at)"
+    ],
+    "enums": {
+      "campaign_type": ["transactional", "promotional", "operational", "re_engagement", "flash_sale_alert", "order_update", "payment_update", "security_alert"],
+      "channel": ["push", "sms", "email", "in_app", "whatsapp"],
+      "status": ["draft", "scheduled", "sending", "sent", "paused", "cancelled", "failed"],
+      "delivery_status": ["pending", "sent", "delivered", "opened", "clicked", "converted", "failed", "bounced", "opted_out"],
+      "segment": ["all_users", "active_last_7_days", "active_last_30_days", "inactive_30days", "inactive_60days", "new_users_last_7_days", "high_value", "gold_tier", "platinum_tier", "cart_abandoned", "specific_users"],
+      "template_type": ["push", "sms", "email_html", "email_text", "in_app_banner", "in_app_modal", "whatsapp"]
+    },
+    "constraints": [
+      "send_at > created_at (for scheduled campaigns)",
+      "target_audience.total_target_users >= 0"
+    ]
+  },
+
+  "notification_campaigns": [
+    {
+      "campaign_id": "notif_june_sale_push",
+      "campaign_display_id": "CAMP-2026-06-0018",
+      "campaign_name": "June Summer Sale - Push Blast",
+      "campaign_type": "promotional",
+      "description": "Push notification for June summer flash sale. Target active users.",
+
+      "template_id": "tmpl_promo_push_generic_v3",
+      "title": "50% OFF on 500+ items!",
+      "body": "Summer sale ends tonight! Use code SUMMER50 at checkout.",
+      "image_url": "https://cdn.zipkart.com/promotions/june_sale_banner.jpg",
+      "deeplink": "zipkart://flash_sale/summer_sale_june",
+      "click_action": "open_flash_sale",
+      "utm_source": "push_notification",
+      "utm_medium": "campaign",
+      "utm_campaign": "june_summer_sale_2026",
+
+      "channels": {
+        "push": { "enabled": true, "template_id": "tmpl_push_june_sale" },
+        "sms": { "enabled": false, "template_id": null },
+        "email": { "enabled": true, "template_id": "tmpl_email_june_sale" },
+        "in_app": { "enabled": true, "template_id": "tmpl_inapp_june_sale" },
+        "whatsapp": { "enabled": false, "template_id": null }
+      },
+
+      "target_audience": {
+        "segment": "active_last_30_days",
+        "specific_user_ids": [],
+        "pincodes": ["all_serviceable"],
+        "dark_store_ids": ["all"],
+        "exclude_users_ordered_last_hours": 0,
+        "exclude_opted_out_users": true,
+        "total_target_users": 250000,
+        "estimated_reachable": 232000
+      },
+
+      "ab_test_config": {
+        "is_ab_test": true,
+        "variant_a": {
+          "name": "Version A - Urgency",
+          "title": "50% OFF on 500+ items!",
+          "body": "Summer sale ends TONIGHT! Use SUMMER50 now.",
+          "audience_split_pct": 50
+        },
+        "variant_b": {
+          "name": "Version B - Savings",
+          "title": "Save BIG on groceries today!",
+          "body": "Up to 50% off + extra 5% for Gold members. Code: SUMMER50",
+          "audience_split_pct": 50
+        },
+        "winner_criteria": "open_rate",
+        "winner_declared": false,
+        "winning_variant": null
+      },
+
+      "schedule": {
+        "send_at": "2026-06-07T11:30:00.000Z",
+        "timezone": "Asia/Kolkata",
+        "local_time_send": "17:00",
+        "is_recurring": false,
+        "recurrence_rule": null,
+        "throttle_per_second": 5000,
+        "quiet_hours_respect": true,
+        "quiet_hours_start": "22:00",
+        "quiet_hours_end": "08:00"
+      },
+
+      "throttle_config": {
+        "max_push_per_user_per_day": 3,
+        "max_sms_per_user_per_day": 2,
+        "max_email_per_user_per_day": 2,
+        "global_cooldown_minutes": 120
+      },
+
+      "status": "scheduled",
+      "is_test_sent": true,
+      "test_sent_to": ["vipul@zipkart.com", "qa_lead@zipkart.com"],
+      "test_sent_at": "2026-06-07T10:00:00.000Z",
+
+      "analytics": {
+        "push": {
+          "sent": 0, "delivered": 0, "opened": 0, "clicked": 0, "converted": 0,
+          "delivery_rate_pct": 0.0, "open_rate_pct": 0.0, "click_rate_pct": 0.0, "conversion_rate_pct": 0.0
+        },
+        "email": {
+          "sent": 0, "delivered": 0, "opened": 0, "clicked": 0, "bounced": 0, "unsubscribed": 0,
+          "delivery_rate_pct": 0.0, "open_rate_pct": 0.0, "click_rate_pct": 0.0
+        },
+        "in_app": {
+          "impressions": 0, "clicked": 0, "dismissed": 0, "converted": 0,
+          "click_rate_pct": 0.0
+        },
+        "revenue_attributed": 0.0,
+        "orders_attributed": 0
+      },
+
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-06-07T09:00:00.000Z",
+      "updated_by": "adm_9f8a7b6c",
+      "updated_at": "2026-06-07T10:00:00.000Z",
+      "is_deleted": false,
+      "version": 2
+    }
+  ],
+
+  "notification_templates": [
+    {
+      "template_id": "tmpl_push_june_sale",
+      "template_name": "Promo Push - June Sale",
+      "template_type": "push",
+      "title": "{{sale_title}}",
+      "body": "{{sale_body}}. Use code {{coupon_code}} at checkout.",
+      "image_url_variable": "{{banner_image_url}}",
+      "deeplink_variable": "{{deeplink_url}}",
+      "variables": ["sale_title", "sale_body", "coupon_code", "banner_image_url", "deeplink_url"],
+      "language": "en",
+      "is_active": true,
+      "is_approved": true,
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2026-05-01T10:00:00.000Z",
+      "updated_at": "2026-05-01T10:00:00.000Z"
+    },
+    {
+      "template_id": "tmpl_sms_order_placed",
+      "template_name": "Order Placed Confirmation",
+      "template_type": "sms",
+      "body": "Your Zipkart order {{order_id}} for Rs.{{order_amount}} is confirmed. Delivering in ~{{eta_minutes}} mins to {{delivery_pincode}}. Track: {{tracking_url}}",
+      "dlt_template_id": "1107168546023456789",
+      "sender_id": "ZIPKRT",
+      "variables": ["order_id", "order_amount", "eta_minutes", "delivery_pincode", "tracking_url"],
+      "language": "en",
+      "is_transactional": true,
+      "is_active": true,
+      "is_approved": true,
+      "approved_dlt": true,
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2024-01-15T10:00:00.000Z"
+    },
+    {
+      "template_id": "tmpl_email_order_delivered",
+      "template_name": "Order Delivered - Rate Your Experience",
+      "template_type": "email_html",
+      "subject": "Your Zipkart order is delivered! Rate your experience",
+      "from_email": "orders@zipkart.com",
+      "from_name": "Zipkart Orders",
+      "reply_to": "support@zipkart.com",
+      "html_url": "https://zipkart-templates.s3.ap-south-1.amazonaws.com/email/order_delivered_v3.html",
+      "preview_text": "Hi {{first_name}}, your order was delivered in {{delivery_minutes}} mins!",
+      "variables": ["first_name", "order_id", "delivery_minutes", "rating_link", "invoice_link"],
+      "language": "en",
+      "is_transactional": true,
+      "is_active": true,
+      "is_approved": true,
+      "created_by": "adm_9f8a7b6c",
+      "created_at": "2024-01-15T10:00:00.000Z",
+      "updated_at": "2026-04-01T10:00:00.000Z"
+    }
+  ],
+
+  "delivery_logs_sample": [
+    {
+      "delivery_log_id": "dl_001_sms_order_placed",
+      "campaign_id": null,
+      "template_id": "tmpl_sms_order_placed",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "channel": "sms",
+      "recipient": "9876543210",
+      "message_body": "Your Zipkart order ORD-2026-001-ABC for Rs.268 is confirmed. Delivering in ~12 mins to 201301. Track: https://track.zipkart.com/ORD-2026-001-ABC",
+      "status": "delivered",
+      "sent_at": "2026-06-06T21:15:30.000Z",
+      "delivered_at": "2026-06-06T21:15:38.000Z",
+      "opened_at": null,
+      "clicked_at": null,
+      "gateway": "twilio",
+      "gateway_message_id": "SM_twilio_abc123xyz",
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "is_opted_out": false
+    },
+    {
+      "delivery_log_id": "dl_002_push_order_delivered",
+      "campaign_id": null,
+      "template_id": "tmpl_push_order_delivered",
+      "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+      "channel": "push",
+      "recipient_token": "fcm_token_abc123xyz456_android",
+      "title": "Order Delivered!",
+      "body": "Your order ORD-2026-001-ABC was delivered in 9 mins. Tap to rate your experience.",
+      "status": "opened",
+      "sent_at": "2026-06-06T21:24:30.000Z",
+      "delivered_at": "2026-06-06T21:24:32.000Z",
+      "opened_at": "2026-06-06T21:25:10.000Z",
+      "clicked_at": "2026-06-06T21:25:12.000Z",
+      "gateway": "firebase_fcm",
+      "gateway_message_id": "FCM_msg_def456uvw",
+      "error_code": null,
+      "error_message": null,
+      "retry_count": 0,
+      "is_opted_out": false
+    }
+  ],
+
+  "opt_outs_schema": {
+    "opt_out_id": "oo_001",
+    "user_id": "some-user-uuid",
+    "channel": "sms",
+    "opted_out_at": "2026-05-01T10:00:00.000Z",
+    "opted_out_reason": "user_unsubscribed",
+    "opted_back_in_at": null,
+    "is_opted_out": true
+  },
+
+  "channel_health": {
+    "push": { "success_rate_pct": 94.2, "avg_delivery_latency_ms": 320, "provider": "Firebase FCM", "status": "healthy" },
+    "sms": { "success_rate_pct": 97.8, "avg_delivery_latency_ms": 2100, "provider": "Twilio", "status": "healthy" },
+    "email": { "success_rate_pct": 91.5, "avg_delivery_latency_ms": 1800, "bounce_rate_pct": 1.2, "provider": "AWS SES", "status": "healthy" },
+    "in_app": { "success_rate_pct": 99.1, "avg_delivery_latency_ms": 80, "provider": "internal", "status": "healthy" }
+  }
+}

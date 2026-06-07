@@ -1,0 +1,169 @@
+{
+  "_schema_meta": {
+    "primary_table": "users (admin view — read + limited write)",
+    "note": "This document represents the enriched customer profile as visible to admin users. Fields marked [PII] require permissions.users.view_sensitive = true.",
+    "indexes": [
+      "phone_number", "email", "user_tier", "account_status",
+      "fraud_risk_score", "is_fraud_flagged", "total_orders",
+      "total_spent_lifetime", "last_order_at", "created_at"
+    ],
+    "enums": {
+      "account_status": ["active", "suspended", "deleted", "pending_verification", "permanently_banned"],
+      "user_tier": ["bronze", "silver", "gold", "platinum", "vip"],
+      "kyc_status": ["not_required", "pending", "verified", "rejected", "expired"],
+      "churn_risk": ["low", "medium", "high", "churned"],
+      "support_ticket_status": ["open", "in_progress", "resolved", "closed", "escalated"]
+    }
+  },
+
+  "admin_view_metadata": {
+    "viewed_by_admin_id": "adm_9f8a7b6c-5d4e-3f2a-1b0c-9d8e7f6a5b4c",
+    "viewed_at": "2026-06-07T11:00:00.000Z",
+    "pii_access_granted": true,
+    "pii_access_reason": "support_ticket_TKT-2026-78901"
+  },
+
+  "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+  "display_name": "Rahul Sharma",
+  "phone_number": "[PII] 9876543210",
+  "phone_masked": "9876****210",
+  "email": "[PII] rahul.sharma@example.com",
+  "email_masked": "r***@example.com",
+  "date_of_birth": "[PII] 1995-08-15",
+  "gender": "M",
+  "account_created_at": "2025-11-15T08:30:00.000Z",
+  "account_status": "active",
+  "suspension_reason": null,
+  "suspended_at": null,
+  "is_deleted": false,
+
+  "user_tier": "gold",
+  "tier_points_balance": 2845,
+  "tier_expiry_at": "2026-12-31T23:59:59.000Z",
+
+  "signup_channel": "referral",
+  "signup_platform": "android",
+  "app_version": "4.7.2",
+  "language_preference": "hi",
+
+  "kyc_status": "not_required",
+  "kyc_verified_at": null,
+  "id_proof_type": null,
+
+  "wallet_balance": 245.75,
+  "is_wallet_enabled": true,
+  "wallet_blocked": false,
+  "wallet_lifetime_credited": 1200.0,
+  "wallet_lifetime_used": 954.25,
+  "cod_allowed": true,
+  "cod_blocked": false,
+
+  "total_orders": 142,
+  "total_orders_delivered": 139,
+  "total_orders_cancelled": 3,
+  "lifetime_gmv": 28450.0,
+  "average_order_value": 200.35,
+  "lifetime_refund_amount": 450.0,
+  "first_order_at": "2025-12-05T19:30:00.000Z",
+  "last_order_at": "2026-06-06T21:15:00.000Z",
+  "last_30_day_orders": 12,
+  "last_30_day_gmv": 2404.2,
+  "is_high_value_user": true,
+
+  "fraud_risk_score": 0.05,
+  "fraud_risk_level": "low",
+  "is_fraud_flagged": false,
+  "fraud_flags": [],
+  "fraud_reviewed_at": null,
+  "fraud_reviewed_by_admin_id": null,
+  "abuse_flags": [],
+  "churn_risk": "low",
+  "churn_risk_score": 0.12,
+  "nps_score": 9,
+  "nps_submitted_at": "2026-05-15T10:00:00.000Z",
+
+  "segment_tags": ["high_value", "frequent_buyer", "dairy_lover", "north_india", "android_user"],
+  "is_influencer": false,
+  "influencer_tier": null,
+
+  "support_summary": {
+    "total_tickets_raised": 3,
+    "open_tickets": 0,
+    "resolved_tickets": 3,
+    "escalated_tickets": 0,
+    "last_ticket_at": "2026-05-20T14:00:00.000Z",
+    "last_ticket_reason": "item_missing",
+    "total_refunds_approved": 2,
+    "total_refund_amount_approved": 450.0
+  },
+
+  "active_support_tickets": [
+    {
+      "ticket_id": "TKT-2026-78901",
+      "subject": "Item missing from order ORD-2026-XYZ789",
+      "status": "resolved",
+      "priority": "medium",
+      "raised_at": "2026-05-20T14:00:00.000Z",
+      "resolved_at": "2026-05-20T16:30:00.000Z",
+      "resolved_by": "Priya Nair (support@zipkart)"
+    }
+  ],
+
+  "login_history_last_5": [
+    {
+      "login_at": "2026-06-07T09:45:22.000Z",
+      "ip_address_masked": "103.58.***.62",
+      "device": "OnePlus 11R / Android 14",
+      "status": "success"
+    },
+    {
+      "login_at": "2026-06-06T08:30:00.000Z",
+      "ip_address_masked": "103.58.***.62",
+      "device": "OnePlus 11R / Android 14",
+      "status": "success"
+    },
+    {
+      "login_at": "2026-06-05T22:15:00.000Z",
+      "ip_address_masked": "192.168.***.50",
+      "device": "iPhone 15 / iOS 17.4",
+      "status": "success"
+    }
+  ],
+
+  "addresses_count": 2,
+  "payment_methods_count": 3,
+  "active_devices_count": 1,
+  "referrals_made": 2,
+  "successful_referrals": 1,
+
+  "admin_notes": [
+    {
+      "note_id": "note_001",
+      "added_by_admin_id": "adm_9f8a7b6c-5d4e-3f2a-1b0c-9d8e7f6a5b4c",
+      "added_by_admin_name": "Rajesh Kumar",
+      "note": "High-value user. Handle with care. All past refunds legitimate.",
+      "created_at": "2026-05-21T10:00:00.000Z"
+    }
+  ],
+
+  "admin_actions_available": {
+    "view_full_order_history": true,
+    "view_payment_history": true,
+    "adjust_wallet_manually": true,
+    "block_user": true,
+    "unblock_user": false,
+    "permanently_ban": false,
+    "reset_phone_verification": true,
+    "reset_email_verification": true,
+    "force_logout_all_sessions": true,
+    "apply_coupon_manually": true,
+    "raise_ticket_on_behalf": true,
+    "update_segment_tags": true,
+    "flag_for_fraud_review": true,
+    "export_user_data_gdpr": true,
+    "initiate_account_deletion": false,
+    "view_pii": true,
+    "view_wallet_transactions": true,
+    "view_login_history": true
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "_schema_meta": {
+    "primary_tables": ["payment_transactions", "refunds", "wallet_transactions", "partner_payouts", "settlements"],
+    "related_tables": [
+      "payment_dispute_cases",
+      "payment_gateway_webhooks",
+      "cod_collection_logs"
+    ],
+    "enums": {
+      "transaction_status": ["initiated", "pending", "authorized", "captured", "failed", "cancelled", "refunded", "partially_refunded", "chargeback_raised"],
+      "payment_method": ["upi", "credit_card", "debit_card", "net_banking", "wallet", "cod", "bnpl", "emi"],
+      "payment_gateway": ["razorpay", "payu", "cashfree", "stripe", "paytm_pg"],
+      "refund_status": ["pending_approval", "approved", "processing", "processed", "failed", "rejected", "reversed"],
+      "refund_mode": ["original_payment_method", "wallet", "bank_transfer", "cheque"],
+      "refund_reason": ["item_missing", "wrong_item_delivered", "damaged_item", "order_cancelled_before_pickup", "order_cancelled_after_pickup", "order_not_delivered", "quality_issue", "partial_delivery", "duplicate_charge"],
+      "payout_status": ["pending", "processing", "processed", "failed", "on_hold", "reversed"],
+      "dispute_status": ["open", "evidence_submitted", "under_review", "resolved_in_favor", "resolved_against", "closed"],
+      "wallet_transaction_type": ["credit", "debit"],
+      "wallet_transaction_source": ["order_refund", "referral_reward", "admin_credit", "cashback", "admin_debit", "order_payment", "coupon_cashback", "loyalty_reward"]
+    },
+    "constraints": [
+      "amount > 0",
+      "refund.amount <= original_transaction.amount",
+      "payment_transactions.order_id FK -> orders.order_id (nullable for wallet top-ups)"
+    ]
+  },
+
+  "payments_dashboard": {
+    "date": "2026-06-07",
+    "daily_collection": {
+      "upi": 845000.5,
+      "credit_card": 185000.25,
+      "debit_card": 157000.0,
+      "net_banking": 42000.0,
+      "wallet": 45000.0,
+      "cod_collected": 284000.75,
+      "cod_pending_collection": 125000.0,
+      "bnpl": 38000.0,
+      "total_online": 1307000.75,
+      "total_cod": 284000.75,
+      "grand_total": 1591001.5
+    },
+    "pg_fee_today": 12072.0,
+    "gst_on_pg_fee": 2172.96,
+    "net_after_pg_fee": 1578928.5
+  },
+
+  "payment_transaction": {
+    "transaction_id": "txn_rzp_20260606_XYZ789",
+    "transaction_display_id": "TXN-2026-06-0042890",
+    "order_id": "o1a2b3c4-5d6e-7f8g-9h0i-1j2k3l4m5n6o",
+    "order_display_id": "ORD-2026-001-ABC",
+    "user_id": "3f7a8b2c-9d4e-4a1f-8c6e-2b7f9a1e3d5c",
+    "customer_name_masked": "Rahul S***",
+    "customer_phone_masked": "9876****210",
+
+    "amount": 268.0,
+    "currency": "INR",
+    "payment_method": "upi",
+    "upi_id_masked": "r***@okhdfcbank",
+    "card_network": null,
+    "card_last4": null,
+    "bank_name": "HDFC Bank",
+
+    "payment_gateway": "razorpay",
+    "gateway_order_id": "order_rzp_ABC123DEF456",
+    "gateway_payment_id": "pay_rzp_GHI789JKL012",
+    "gateway_signature": "sha256_signature_hash",
+    "gateway_fee": 2.41,
+    "gateway_gst": 0.43,
+    "net_amount_after_pg_fee": 265.16,
+
+    "status": "captured",
+    "initiated_at": "2026-06-06T21:15:00.000Z",
+    "authorized_at": "2026-06-06T21:15:20.000Z",
+    "captured_at": "2026-06-06T21:15:22.000Z",
+    "failed_at": null,
+    "failure_code": null,
+    "failure_message": null,
+    "cancellation_reason": null,
+
+    "fraud_risk_score": 0.04,
+    "fraud_flags": [],
+    "is_fraud_flagged": false,
+
+    "refund_status": "not_refunded",
+    "refund_amount": 0.0,
+    "remaining_refundable_amount": 268.0,
+
+    "dark_store_id": "ds_noida_sec62",
+    "settlement_id": null,
+    "settled_at": null,
+    "is_settled": false,
+
+    "created_at": "2026-06-06T21:15:00.000Z",
+    "updated_at": "2026-06-06T21:15:22.000Z"
+  },
+
+  "refund_requests": [
+    {
+      "refund_id": "ref_78901",
+      "refund_display_id": "REF-2026-06-00042",
+      "order_id": "ord_xyz789",
+      "order_display_id": "ORD-2026-XYZ789",
+      "transaction_id": "txn_rzp_20260607_XYZ789",
+      "user_id": "user_anjali_mehta",
+      "customer_name_masked": "Anjali M***",
+      "customer_phone_masked": "9876****100",
+
+      "amount_paid": 750.0,
+      "refund_amount_requested": 350.0,
+      "refund_amount_approved": 350.0,
+      "refund_mode": "original_payment_method",
+      "refund_reason": "item_missing",
+      "reason_detail": "Lay's chips 75g was missing from the order bag",
+      "supporting_evidence_urls": ["https://zipkart-evidence.s3.ap-south-1.amazonaws.com/refunds/ref_78901/evidence1.jpg"],
+
+      "status": "approved",
+      "requested_at": "2026-06-07T08:30:00.000Z",
+      "assigned_to": "finance_team",
+      "reviewed_by_admin_id": "adm_4e5f6a7b",
+      "reviewed_at": "2026-06-07T11:30:00.000Z",
+      "rejection_reason": null,
+      "processing_started_at": "2026-06-07T11:31:00.000Z",
+      "processed_at": null,
+      "gateway_refund_id": null,
+      "expected_credit_days": 5,
+      "credited_at": null,
+
+      "payment_gateway": "razorpay",
+      "original_payment_method": "upi",
+      "upi_id_masked": "anjali***@oksbi",
+
+      "is_auto_approved": false,
+      "auto_approval_threshold": 200.0,
+      "dark_store_id": "ds_noida_sec62",
+
+      "created_at": "2026-06-07T08:30:00.000Z",
+      "updated_at": "2026-06-07T11:31:00.000Z"
+    }
+  ],
+
+  "wallet_transactions": [
+    {
+      "wallet_txn_id": "wtxn_credit_refund_001",
+      "user_id": "user_anjali_mehta",
+      "type": "credit",
+      "source": "order_refund",
+      "amount": 150.0,
+      "balance_before": 95.75,
+      "balance_after": 245.75,
+      "reference_id": "ref_78901_partial",
+      "reference_type": "refund",
+      "description": "Refund credited for missing item in order ORD-2026-XYZ789",
+      "expiry_at": null,
+      "is_expired": false,
+      "admin_initiated": false,
+      "admin_id": null,
+      "admin_reason": null,
+      "created_at": "2026-06-07T11:35:00.000Z"
+    },
+    {
+      "wallet_txn_id": "wtxn_debit_admin_001",
+      "user_id": "user_fraud_001",
+      "type": "debit",
+      "source": "admin_debit",
+      "amount": 200.0,
+      "balance_before": 500.0,
+      "balance_after": 300.0,
+      "reference_id": null,
+      "reference_type": "admin_action",
+      "description": "Admin debit: Fraudulent coupon abuse reversal",
+      "expiry_at": null,
+      "is_expired": false,
+      "admin_initiated": true,
+      "admin_id": "adm_9f8a7b6c",
+      "admin_reason": "Reversed wallet credits from fraudulent coupon abuse (ticket TKT-2026-88001)",
+      "created_at": "2026-06-07T12:00:00.000Z"
+    }
+  ],
+
+  "partner_payouts": [
+    {
+      "payout_id": "payout_del_rajesh_1423_wk23",
+      "payout_display_id": "PAY-2026-WK23-001234",
+      "partner_id": "del_rajesh_1423",
+      "partner_name": "Rajesh Kumar",
+      "partner_code": "ZIP-DEL-1423",
+      "dark_store_id": "ds_noida_sec62",
+      "payout_period_from": "2026-06-01",
+      "payout_period_to": "2026-06-07",
+      "total_deliveries": 126,
+      "base_earnings": 3780.0,
+      "incentive_earnings": 945.0,
+      "peak_bonus": 630.0,
+      "total_gross_earnings": 5355.0,
+      "penalty_deductions": 0.0,
+      "advance_deductions": 0.0,
+      "tds_deducted": 0.0,
+      "net_payout_amount": 5355.0,
+      "payout_mode": "bank_transfer",
+      "bank_account_id": "ba_del_rajesh_1423",
+      "upi_id": "rajesh1423@paytm",
+      "status": "pending",
+      "initiated_at": null,
+      "initiated_by": null,
+      "processed_at": null,
+      "gateway_reference_id": null,
+      "failure_reason": null,
+      "scheduled_payout_date": "2026-06-10",
+      "created_at": "2026-06-07T23:59:00.000Z",
+      "updated_at": "2026-06-07T23:59:00.000Z"
+    }
+  ],
+
+  "settlements": [
+    {
+      "settlement_id": "stl_20260606_001",
+      "settlement_display_id": "STL-2026-06-0042",
+      "settlement_period_from": "2026-06-06T00:00:00.000Z",
+      "settlement_period_to": "2026-06-06T23:59:59.000Z",
+      "payment_gateway": "razorpay",
+      "total_transactions": 2847,
+      "total_captured_amount": 1307000.75,
+      "total_refunds": 48500.0,
+      "net_amount": 1258500.75,
+      "gateway_fee": 11725.5,
+      "gst_on_gateway_fee": 2110.59,
+      "net_after_deductions": 1244664.66,
+      "amount_settled_to_bank": 1244664.66,
+      "settlement_utr": "UTR2026060600123456",
+      "bank_account": "50200*****1234",
+      "status": "completed",
+      "gateway_settlement_id": "setl_rzp_2026060601",
+      "created_at": "2026-06-06T23:59:00.000Z",
+      "settled_at": "2026-06-07T06:00:00.000Z"
+    }
+  ],
+
+  "dispute_cases": [
+    {
+      "dispute_id": "disp_001",
+      "transaction_id": "txn_rzp_20260601_ABC123",
+      "order_id": "ord_disputed_001",
+      "user_id": "user_credit_card_001",
+      "disputed_amount": 480.0,
+      "dispute_reason": "item_not_received",
+      "status": "under_review",
+      "raised_by": "user",
+      "raised_at": "2026-06-05T10:00:00.000Z",
+      "evidence_submitted": true,
+      "evidence_submitted_at": "2026-06-06T14:00:00.000Z",
+      "evidence_urls": ["https://zipkart-evidence.s3.ap-south-1.amazonaws.com/disputes/disp_001/delivery_proof.jpg"],
+      "resolution_deadline": "2026-06-20T00:00:00.000Z",
+      "resolved_at": null,
+      "resolution": null,
+      "assigned_to_admin": "adm_4e5f6a7b",
+      "created_at": "2026-06-05T10:00:00.000Z"
+    }
+  ],
+
+  "cod_collection_summary": {
+    "date": "2026-06-07",
+    "total_cod_orders": 284,
+    "total_cod_expected": 409000.75,
+    "total_cod_collected_by_partners": 284000.75,
+    "total_cod_pending": 125000.0,
+    "partners_with_pending_cod": 18,
+    "max_pending_per_partner": 12000.0,
+    "cod_collection_deadline": "2026-06-08T06:00:00.000Z"
+  }
+}

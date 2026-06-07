@@ -1,0 +1,289 @@
+{
+  "_schema_meta": {
+    "primary_table": "delivery_partners",
+    "related_tables": [
+      "partner_kyc_documents",
+      "partner_vehicles",
+      "partner_bank_accounts",
+      "partner_earnings",
+      "partner_performance_snapshots",
+      "delivery_assignments",
+      "partner_penalties",
+      "partner_incentives"
+    ],
+    "primary_key": "partner_id",
+    "indexes": [
+      "partner_code (UNIQUE)",
+      "phone (UNIQUE)",
+      "aadhaar_number_hash (UNIQUE)",
+      "dark_store_id",
+      "current_status",
+      "kyc_status",
+      "onboarding_status",
+      "is_active",
+      "background_check_status"
+    ],
+    "enums": {
+      "current_status": ["available", "on_delivery", "returning_to_store", "on_break", "offline", "suspended", "blocked"],
+      "onboarding_status": ["pending_documents", "documents_submitted", "kyc_in_review", "background_check", "training", "active", "rejected"],
+      "kyc_status": ["pending", "submitted", "under_review", "verified", "rejected", "re_submission_required", "expired"],
+      "vehicle_type": ["bicycle", "e_bicycle", "motorcycle", "e_scooter", "cargo_cycle"],
+      "background_check_status": ["not_initiated", "in_progress", "cleared", "failed", "re_check_required"],
+      "payout_frequency": ["daily", "weekly", "biweekly"],
+      "penalty_type": ["late_delivery", "delivery_refusal", "misconduct", "damaged_product", "fake_delivery_attempt"],
+      "document_type": ["aadhaar_front", "aadhaar_back", "pan", "driving_licence", "vehicle_rc", "vehicle_insurance", "bank_passbook", "profile_photo", "police_verification"]
+    },
+    "constraints": [
+      "phone UNIQUE NOT NULL",
+      "aadhaar_number_hash UNIQUE NOT NULL",
+      "dark_store_id FK -> dark_stores.store_id"
+    ]
+  },
+
+  "delivery_partners": [
+    {
+      "partner_id": "del_rajesh_1423",
+      "partner_code": "ZIP-DEL-1423",
+      "partner_display_id": "BLK-1423",
+
+      "first_name": "Rajesh",
+      "last_name": "Kumar",
+      "display_name": "Rajesh Kumar",
+      "phone": "9999991423",
+      "country_code": "+91",
+      "alternate_phone": "9999994321",
+      "email": "rajesh.delivery1423@gmail.com",
+      "date_of_birth": "1995-03-18",
+      "gender": "M",
+      "profile_photo_url": "https://zipkart-partners.s3.ap-south-1.amazonaws.com/partners/del_rajesh_1423/photo.jpg",
+
+      "aadhaar_number_masked": "XXXX-XXXX-4321",
+      "aadhaar_number_hash": "sha256_hash_of_aadhaar_4321",
+      "pan_number_masked": "ABCPK1234X",
+      "pan_number_hash": "sha256_hash_of_pan_1234",
+
+      "emergency_contact": {
+        "name": "Sunita Kumar",
+        "relationship": "Mother",
+        "phone": "9999995678"
+      },
+
+      "current_address": {
+        "flat_no": "Room 12, Ground Floor",
+        "building": "Ravi Niwas",
+        "area": "Sector 61",
+        "city": "Noida",
+        "state": "Uttar Pradesh",
+        "pincode": "201301"
+      },
+
+      "dark_store_id": "ds_noida_sec62",
+      "dark_store_name": "Zipkart - Noida Sector 62",
+      "assigned_zone": "Zone_A_North",
+      "assigned_region": "Delhi NCR",
+
+      "onboarding_status": "active",
+      "onboarding_date": "2024-03-01",
+      "onboarding_completed_at": "2024-03-05T10:00:00.000Z",
+      "onboarded_by": "adm_partner_mgr_01",
+      "training_completed": true,
+      "training_completed_at": "2024-03-04T16:00:00.000Z",
+
+      "kyc_status": "verified",
+      "kyc_verified_at": "2024-03-03T14:00:00.000Z",
+      "kyc_verified_by": "adm_partner_mgr_01",
+      "kyc_expiry_date": "2026-03-03",
+      "kyc_next_renewal_due": "2026-03-03",
+
+      "background_check_status": "cleared",
+      "background_check_agency": "AuthBridge",
+      "background_check_reference": "ABCHK-2024-034521",
+      "background_check_date": "2024-03-02",
+      "background_check_expiry": "2026-03-02",
+
+      "current_status": "available",
+      "current_location": { "lat": 28.6145, "lng": 77.2085, "updated_at": "2026-06-07T10:25:00.000Z" },
+      "is_active": true,
+      "is_blocked": false,
+      "block_reason": null,
+      "blocked_at": null,
+      "blocked_by": null,
+
+      "vehicle": {
+        "vehicle_id": "veh_del_rajesh_1423_01",
+        "partner_id": "del_rajesh_1423",
+        "vehicle_type": "bicycle",
+        "is_electric": false,
+        "make": "Hero",
+        "model": "Sprint Pro",
+        "color": "Red",
+        "registration_number": null,
+        "insurance_number": null,
+        "insurance_expiry": null,
+        "rc_number": null,
+        "rc_expiry": null,
+        "is_verified": true,
+        "is_active": true,
+        "created_at": "2024-03-01T10:00:00.000Z"
+      },
+
+      "bank_account": {
+        "bank_account_id": "ba_del_rajesh_1423",
+        "partner_id": "del_rajesh_1423",
+        "account_holder_name": "Rajesh Kumar",
+        "bank_name": "State Bank of India",
+        "account_number_masked": "XXXXXX1234",
+        "ifsc_code": "SBIN0001234",
+        "account_type": "savings",
+        "upi_id": "rajesh1423@paytm",
+        "is_primary": true,
+        "is_verified": true,
+        "verified_at": "2024-03-03T14:00:00.000Z"
+      },
+
+      "commission_config": {
+        "base_per_delivery_inr": 30.0,
+        "per_km_incentive_inr": 3.0,
+        "surge_multiplier": 1.5,
+        "peak_hour_bonus_inr": 10.0,
+        "monthly_target_deliveries": 600,
+        "target_achievement_bonus_inr": 2000.0,
+        "fuel_allowance_daily_inr": 0.0,
+        "platform_fee_pct": 0.0,
+        "payout_frequency": "weekly",
+        "payout_day": "tuesday"
+      },
+
+      "performance_today": {
+        "total_deliveries": 18,
+        "deliveries_on_time": 17,
+        "deliveries_late": 1,
+        "deliveries_failed": 0,
+        "avg_delivery_time_minutes": 10.8,
+        "customer_rating_today": 4.9,
+        "total_km_covered": 42.5,
+        "earnings_today": 720.0,
+        "incentives_today": 180.0,
+        "penalties_today": 0.0,
+        "net_earnings_today": 900.0
+      },
+
+      "performance_lifetime": {
+        "total_deliveries": 8420,
+        "deliveries_on_time": 8104,
+        "on_time_rate_pct": 96.24,
+        "deliveries_failed": 28,
+        "failure_rate_pct": 0.33,
+        "avg_customer_rating": 4.8,
+        "total_reviews": 1845,
+        "total_km_covered_lifetime": 19800.0,
+        "total_earnings_lifetime": 295000.0,
+        "penalty_count": 3,
+        "total_penalty_deducted": 450.0,
+        "geofence_violations": 2,
+        "return_rate_pct": 0.12
+      },
+
+      "earnings_summary": {
+        "current_week_earnings": 4320.0,
+        "current_week_incentives": 1080.0,
+        "current_week_penalties": 0.0,
+        "current_week_net": 5400.0,
+        "pending_payout_amount": 5400.0,
+        "next_payout_date": "2026-06-10",
+        "last_payout_amount": 5200.0,
+        "last_payout_date": "2026-06-03",
+        "last_payout_status": "processed"
+      },
+
+      "last_active_at": "2026-06-07T10:25:00.000Z",
+      "app_version": "3.2.1",
+      "device_os": "Android 13",
+
+      "created_by": "adm_partner_mgr_01",
+      "created_at": "2024-03-01T10:00:00.000Z",
+      "updated_by": "adm_9f8a7b6c",
+      "updated_at": "2026-06-07T10:25:00.000Z",
+      "version": 45,
+
+      "kyc_documents": [
+        {
+          "doc_id": "kdoc_rajesh_aadhaar_front",
+          "partner_id": "del_rajesh_1423",
+          "document_type": "aadhaar_front",
+          "document_url": "https://zipkart-partners.s3.ap-south-1.amazonaws.com/kyc/del_rajesh_1423/aadhaar_front.jpg",
+          "status": "verified",
+          "verified_at": "2024-03-03T14:00:00.000Z",
+          "expiry_date": null,
+          "rejection_reason": null,
+          "uploaded_at": "2024-03-02T10:00:00.000Z"
+        },
+        {
+          "doc_id": "kdoc_rajesh_pan",
+          "partner_id": "del_rajesh_1423",
+          "document_type": "pan",
+          "document_url": "https://zipkart-partners.s3.ap-south-1.amazonaws.com/kyc/del_rajesh_1423/pan.jpg",
+          "status": "verified",
+          "verified_at": "2024-03-03T14:00:00.000Z",
+          "expiry_date": null,
+          "rejection_reason": null,
+          "uploaded_at": "2024-03-02T10:00:00.000Z"
+        }
+      ],
+
+      "penalties": [],
+      "incentives_active": [
+        {
+          "incentive_id": "inc_peak_jun_2026",
+          "name": "June Peak Hour Bonus",
+          "type": "per_delivery_bonus",
+          "amount_per_delivery": 10.0,
+          "valid_hours": ["18:00-21:00"],
+          "valid_from": "2026-06-01",
+          "valid_to": "2026-06-30",
+          "is_active": true
+        }
+      ],
+
+      "admin_actions_available": [
+        "view_full_profile",
+        "update_kyc_status",
+        "adjust_commission",
+        "approve_payout",
+        "reject_payout",
+        "temporarily_block",
+        "permanently_block",
+        "unblock",
+        "view_route_history",
+        "view_earnings_breakdown",
+        "add_penalty",
+        "add_incentive",
+        "reassign_dark_store",
+        "reset_app_credentials"
+      ]
+    }
+  ],
+
+  "partner_metrics": {
+    "dark_store_id": "ds_noida_sec62",
+    "as_of": "2026-06-07T10:30:00.000Z",
+    "total_registered_partners": 328,
+    "total_active_partners": 284,
+    "available_now": 156,
+    "on_delivery_now": 98,
+    "on_break_now": 18,
+    "offline_now": 12,
+    "suspended_now": 8,
+    "avg_delivery_time_minutes": 11.2,
+    "avg_rating_platform": 4.65,
+    "target_partners_needed_peak": 320,
+    "shortage_count": 36,
+    "avg_earnings_per_partner_today": 720.0,
+    "total_deliveries_today": 2503,
+    "total_km_covered_today": 18420.0,
+    "pending_payout_total": 1850000.0,
+    "next_payout_date": "2026-06-10",
+    "failed_payouts_count": 3,
+    "failed_payouts_amount": 4800.0
+  }
+}
