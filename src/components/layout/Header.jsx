@@ -1,4 +1,4 @@
-import { Bell, Search, LogOut, ChevronDown } from 'lucide-react';
+import { Bell, Search, LogOut, ChevronDown, User, Lock } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
@@ -18,6 +18,7 @@ const titles = {
   '/analytics': 'Analytics',
   '/audit-logs': 'Audit Logs',
   '/app-config': 'App Config',
+  '/profile': 'Profile & Settings',
 };
 
 export default function Header() {
@@ -29,7 +30,6 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
-  // Close menu on outside click
   useEffect(() => {
     if (!menuOpen) return;
     const handler = (e) => { if (!menuRef.current?.contains(e.target)) setMenuOpen(false); };
@@ -41,6 +41,17 @@ export default function Header() {
     logout();
     navigate('/auth/login', { replace: true });
   };
+
+  const displayName = user?.display_name ?? user?.name ?? 'Admin';
+  const roleName    = user?.role_name    ?? user?.role  ?? 'Admin';
+  const email       = user?.email ?? '';
+
+  // Generate initials from display_name
+  const avatarText = (() => {
+    const parts = displayName.trim().split(' ').filter(Boolean);
+    if (parts.length >= 2) return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+    return (parts[0]?.[0] ?? 'A').toUpperCase();
+  })();
 
   return (
     <header className="fixed top-0 left-56 right-0 h-14 bg-white border-b border-gray-200 flex items-center px-6 gap-4 z-20">
@@ -56,7 +67,7 @@ export default function Header() {
 
       <button className="relative p-2 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
         <Bell size={18} />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full"></span>
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-orange-500 rounded-full" />
       </button>
 
       {/* User menu */}
@@ -65,31 +76,37 @@ export default function Header() {
           onClick={() => setMenuOpen(o => !o)}
           className="flex items-center gap-2 hover:bg-gray-50 rounded-lg px-2 py-1 transition-colors"
         >
-          <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
-            {user?.avatar ?? 'AD'}
+          <div className="w-8 h-8 bg-linear-to-br from-orange-400 to-orange-600 rounded-full flex items-center justify-center text-white text-xs font-bold shrink-0">
+            {avatarText}
           </div>
           <div className="hidden sm:block text-left">
-            <div className="text-xs font-semibold text-gray-900 leading-none">{user?.name ?? 'Admin'}</div>
-            <div className="text-xs text-gray-500 leading-none mt-0.5">{user?.role ?? 'Super Admin'}</div>
+            <div className="text-xs font-semibold text-gray-900 leading-none">{displayName}</div>
+            <div className="text-xs text-gray-500 leading-none mt-0.5">{roleName}</div>
           </div>
           <ChevronDown size={14} className={`text-gray-400 transition-transform ${menuOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {menuOpen && (
-          <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-xl border border-gray-200 shadow-lg py-1 z-50">
-            <div className="px-4 py-2.5 border-b border-gray-100">
-              <div className="text-xs font-semibold text-gray-900">{user?.name}</div>
-              <div className="text-xs text-gray-400 truncate">{user?.email}</div>
-              <div className="mt-1 inline-block bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full font-medium">
-                {user?.role}
+          <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl border border-gray-200 shadow-lg py-1 z-50">
+            <div className="px-4 py-3 border-b border-gray-100">
+              <div className="text-xs font-semibold text-gray-900 truncate">{displayName}</div>
+              <div className="text-xs text-gray-400 truncate mt-0.5">{email}</div>
+              <div className="mt-1.5 inline-block bg-orange-100 text-orange-700 text-xs px-2 py-0.5 rounded-full font-medium">
+                {roleName}
               </div>
             </div>
             <div className="py-1">
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-                Profile & Settings
+              <button
+                onClick={() => { setMenuOpen(false); navigate('/profile'); }}
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                <User size={14} className="text-gray-400" /> Profile & Settings
               </button>
-              <button className="w-full text-left px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-                Change Password
+              <button
+                onClick={() => { setMenuOpen(false); navigate('/profile?tab=security'); }}
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                <Lock size={14} className="text-gray-400" /> Change Password
               </button>
             </div>
             <div className="border-t border-gray-100 py-1">

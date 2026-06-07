@@ -26,6 +26,7 @@ import Notifications from './pages/Notifications';
 import Analytics from './pages/Analytics';
 import AuditLogs from './pages/AuditLogs';
 import AppConfig from './pages/AppConfig';
+import Profile from './pages/Profile';
 
 export default function App() {
   return (
@@ -59,6 +60,7 @@ export default function App() {
                   <Route path="/analytics"    element={<Analytics />} />
                   <Route path="/audit-logs"   element={<AuditLogs />} />
                   <Route path="/app-config"   element={<AppConfig />} />
+                  <Route path="/profile"      element={<Profile />} />
                   {/* Fallback */}
                   <Route path="*"             element={<Navigate to="/" replace />} />
                 </Routes>
