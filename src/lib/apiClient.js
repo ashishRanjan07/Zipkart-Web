@@ -6,6 +6,10 @@ const API_PREFIX = `${BASE_URL}/api/${API_VERSION}`;
 // Refresh token lives in sessionStorage (cleared when tab closes).
 let _accessToken = null;
 
+// Single in-flight refresh promise — prevents parallel 401s from each spawning
+// their own refresh request (which would exhaust rotating refresh tokens).
+let _refreshPromise = null;
+
 export const tokenStore = {
   getAccess: () => _accessToken,
   setAccess: (token) => { _accessToken = token; },
@@ -28,24 +32,37 @@ export class ApiError extends Error {
 }
 
 async function attemptTokenRefresh() {
+  // If a refresh is already in flight, wait for it instead of making a second one.
+  if (_refreshPromise) return _refreshPromise;
+
   const refreshToken = tokenStore.getRefresh();
   if (!refreshToken) throw new ApiError(401, 'No refresh token');
 
-  const res = await fetch(`${API_PREFIX}/admin/auth/refresh`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ refresh_token: refreshToken }),
-  });
+  _refreshPromise = (async () => {
+    try {
+      const res = await fetch(`${API_PREFIX}/admin/auth/refresh`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: refreshToken }),
+      });
 
-  if (!res.ok) {
-    tokenStore.clearAll();
-    throw new ApiError(401, 'Session expired. Please log in again.');
-  }
+      if (!res.ok) {
+        tokenStore.clearAll();
+        throw new ApiError(401, 'Session expired. Please log in again.');
+      }
 
-  const data = await res.json();
-  tokenStore.setAccess(data.access_token);
-  if (data.refresh_token) tokenStore.setRefresh(data.refresh_token);
-  return data.access_token;
+      const data = await res.json();
+      const newAccess  = data.data?.access_token  ?? data.access_token;
+      const newRefresh = data.data?.refresh_token ?? data.refresh_token;
+      if (newAccess)  tokenStore.setAccess(newAccess);
+      if (newRefresh) tokenStore.setRefresh(newRefresh);
+      return newAccess;
+    } finally {
+      _refreshPromise = null;
+    }
+  })();
+
+  return _refreshPromise;
 }
 
 function buildHeaders(token) {

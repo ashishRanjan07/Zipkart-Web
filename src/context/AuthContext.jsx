@@ -52,8 +52,66 @@ export function AuthProvider({ children }) {
   const [loading, setLoading]           = useState(false);
   const [error, setError]               = useState('');
 
+  // True while we're silently restoring the access token on page load.
+  // Protected pages wait for this before rendering (and making API calls).
+  // Mock mode never needs a restore — skip it.
+  const [initializing, setInitializing] = useState(() => !USE_MOCK && !!loadSession());
+
   const clearError = useCallback(() => setError(''), []);
 
+  // ── Silent token restore on page refresh ─────────────────────────────────────
+  // The in-memory access token is lost on every page reload. If the user has a
+  // stored session we silently call the refresh endpoint to get a new access
+  // token. If the refresh fails the session is cleared quietly — no error toast.
+  useEffect(() => {
+    if (!initializing) return;
+
+    const BASE = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8000';
+    const VER  = import.meta.env.VITE_API_VERSION ?? 'v1';
+
+    async function restore() {
+      const refreshToken = tokenStore.getRefresh();
+      if (!refreshToken) {
+        // No refresh token — can't restore, clear session silently.
+        sessionStorage.removeItem(SESSION_KEY);
+        setSession(null);
+        setInitializing(false);
+        return;
+      }
+
+      try {
+        const res = await fetch(`${BASE}/api/${VER}/admin/auth/refresh`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ refresh_token: refreshToken }),
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          const newAccess  = json.data?.access_token  ?? json.access_token;
+          const newRefresh = json.data?.refresh_token ?? json.refresh_token;
+          if (newAccess)  tokenStore.setAccess(newAccess);
+          if (newRefresh) tokenStore.setRefresh(newRefresh);
+        } else {
+          // Refresh token is expired / rejected — clear silently, no toast.
+          tokenStore.clearAll();
+          setSession(null);
+        }
+      } catch {
+        // Network error during restore — keep the session in state so the user
+        // isn't logged out due to a momentary connectivity blip. API calls will
+        // surface their own errors once the page is rendered.
+      }
+
+      setInitializing(false);
+    }
+
+    restore();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Mid-session expiry (fired by apiClient when a refresh fails mid-use) ─────
+  // This listener only triggers after initializing=false so it won't fire
+  // during the silent restore above.
   useEffect(() => {
     const onExpired = () => {
       setSession(null);
@@ -287,6 +345,7 @@ export function AuthProvider({ children }) {
     <AuthContext.Provider value={{
       user: session?.user ?? null,
       isAuthenticated: !!session,
+      initializing,
       pendingUser,
       pendingReset,
       loading,
