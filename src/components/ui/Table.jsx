@@ -1,4 +1,5 @@
 export default function Table({ columns, data, onRowClick, emptyMessage = 'No records found.' }) {
+  const rows = Array.isArray(data) ? data : [];
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -16,14 +17,14 @@ export default function Table({ columns, data, onRowClick, emptyMessage = 'No re
           </tr>
         </thead>
         <tbody>
-          {data.length === 0 ? (
+          {rows.length === 0 ? (
             <tr>
               <td colSpan={columns.length} className="text-center text-gray-400 py-10">
                 {emptyMessage}
               </td>
             </tr>
           ) : (
-            data.map((row, i) => (
+            rows.map((row, i) => (
               <tr
                 key={row.id ?? i}
                 onClick={onRowClick ? () => onRowClick(row) : undefined}

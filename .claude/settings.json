@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "additionalDirectories": [
+      "/Users/assert/Desktop/Projects/zipkart-backend/src/routes",
+      "/Users/assert/Desktop/Projects/zipkart-backend/src/controllers"
+    ],
+    "allow": [
+      "Read(//Users/assert/Desktop/Projects/zipkart-backend/src/models/**)"
+    ]
+  }
+}

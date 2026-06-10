@@ -1,46 +1,56 @@
 import api from '../lib/apiClient';
 
-// GET /admin/users
-// params: status, tier, segment, search, is_blocked, date_from, date_to,
-//         sort_by, sort_dir, page, limit
-const list = (params) => api.get('/admin/users', { params });
+const stats = () =>
+  api.get('/admin/customers/stats');
 
-// GET /admin/users/:id
-const getById = (id) => api.get(`/admin/users/${id}`);
+const list = (params) =>
+  api.get('/admin/customers', { params });
 
-// PATCH /admin/users/:id/block
-// body: { reason }
-const block = (id, reason) => api.patch(`/admin/users/${id}/block`, { reason });
+const create = (body) =>
+  api.post('/admin/customers', body);
 
-// PATCH /admin/users/:id/unblock
-const unblock = (id) => api.patch(`/admin/users/${id}/unblock`, {});
+const getById = (id) =>
+  api.get(`/admin/customers/${id}`);
 
-// PATCH /admin/users/:id/wallet/adjust
-// body: { amount, type (credit|debit), reason, admin_note }
-const adjustWallet = (id, body) => api.patch(`/admin/users/${id}/wallet/adjust`, body);
+const update = (id, body) =>
+  api.patch(`/admin/customers/${id}`, body);
 
-// GET /admin/users/:id/orders
-// params: page, limit
-const userOrders = (id, params) => api.get(`/admin/users/${id}/orders`, { params });
+const updateStatus = (id, body) =>
+  api.patch(`/admin/customers/${id}/status`, body);
 
-// GET /admin/users/:id/wallet-transactions
-// params: page, limit
-const walletTransactions = (id, params) =>
-  api.get(`/admin/users/${id}/wallet-transactions`, { params });
+const updateTier = (id, body) =>
+  api.patch(`/admin/customers/${id}/tier`, body);
 
-// PATCH /admin/users/:id/cod-block
-// body: { reason }
-const blockCod = (id, reason) => api.patch(`/admin/users/${id}/cod-block`, { reason });
+const updateFraud = (id, body) =>
+  api.patch(`/admin/customers/${id}/fraud`, body);
 
-// PATCH /admin/users/:id/cod-unblock
-const unblockCod = (id) => api.patch(`/admin/users/${id}/cod-unblock`, {});
+const updateCod = (id, body) =>
+  api.patch(`/admin/customers/${id}/cod`, body);
 
-// POST /admin/users/:id/notes
-// body: { note }
-const addNote = (id, note) => api.post(`/admin/users/${id}/notes`, { note });
+const creditWallet = (id, body) =>
+  api.patch(`/admin/customers/${id}/wallet/credit`, body);
+
+const debitWallet = (id, body) =>
+  api.patch(`/admin/customers/${id}/wallet/debit`, body);
+
+const blockWallet = (id, body) =>
+  api.patch(`/admin/customers/${id}/wallet/block`, body);
+
+const getWalletTransactions = (id, params) =>
+  api.get(`/admin/customers/${id}/wallet/transactions`, { params });
+
+const getSessions = (id) =>
+  api.get(`/admin/customers/${id}/sessions`);
+
+const revokeAllSessions = (id) =>
+  api.post(`/admin/customers/${id}/sessions/revoke-all`);
+
+const deleteCustomer = (id, body) =>
+  api.delete(`/admin/customers/${id}`, { body });
 
 const usersService = {
-  list, getById, block, unblock, adjustWallet,
-  userOrders, walletTransactions, blockCod, unblockCod, addNote,
+  stats, list, create, getById, update, updateStatus, updateTier, updateFraud,
+  updateCod, creditWallet, debitWallet, blockWallet, getWalletTransactions,
+  getSessions, revokeAllSessions, deleteCustomer,
 };
 export default usersService;
