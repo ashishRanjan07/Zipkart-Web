@@ -1,46 +1,37 @@
 import api from '../lib/apiClient';
 
-// GET /admin/stores
-// params: status, city, search, page, limit
-const list = (params) => api.get('/admin/stores', { params });
-
-// GET /admin/stores/:id
-const getById = (id) => api.get(`/admin/stores/${id}`);
-
-// POST /admin/stores
-// body: DarkStore
-const create = (body) => api.post('/admin/stores', body);
-
-// PUT /admin/stores/:id
-// body: DarkStore (partial allowed)
-const update = (id, body) => api.put(`/admin/stores/${id}`, body);
-
-// PATCH /admin/stores/:id/status
-// body: { status, reason }
-const updateStatus = (id, body) => api.patch(`/admin/stores/${id}/status`, body);
-
-// GET /admin/stores/:id/capacity
-// res: { active_orders, max_orders, utilization_pct, surge_level }
-const capacity = (id) => api.get(`/admin/stores/${id}/capacity`);
-
-// PATCH /admin/stores/:id/sla-config
-// body: SlaConfig
-const updateSlaConfig = (id, body) => api.patch(`/admin/stores/${id}/sla-config`, body);
-
-// GET /admin/stores/:id/documents
-const documents = (id) => api.get(`/admin/stores/${id}/documents`);
-
-// PUT /admin/stores/:id/documents/:docId
-// body: { document_url, expiry_date }
-const updateDocument = (id, docId, body) =>
-  api.put(`/admin/stores/${id}/documents/${docId}`, body);
-
-// GET /admin/stores/:id/performance
-// params: date_from, date_to
-const performance = (id, params) => api.get(`/admin/stores/${id}/performance`, { params });
+const stats               = ()           => api.get('/admin/dark-stores/stats');
+const list                = (params)     => api.get('/admin/dark-stores', { params });
+const create              = (body)       => api.post('/admin/dark-stores', body);
+const getById             = (id)         => api.get(`/admin/dark-stores/${id}`);
+const update              = (id, body)   => api.patch(`/admin/dark-stores/${id}`, body);
+const deleteStore         = (id, body)   => api.delete(`/admin/dark-stores/${id}`, { body });
+const updateStatus        = (id, body)   => api.patch(`/admin/dark-stores/${id}/status`, body);
+const emergencyShutdown   = (id, body)   => api.post(`/admin/dark-stores/${id}/emergency-shutdown`, body);
+const assignManager       = (id, body)   => api.patch(`/admin/dark-stores/${id}/manager`, body);
+const updatePincodes      = (id, body)   => api.patch(`/admin/dark-stores/${id}/pincodes`, body);
+const updateZones         = (id, body)   => api.patch(`/admin/dark-stores/${id}/delivery-zones`, body);
+const updateSla           = (id, body)   => api.patch(`/admin/dark-stores/${id}/sla`, body);
+const updateCapacity      = (id, body)   => api.patch(`/admin/dark-stores/${id}/capacity`, body);
+const updateHours         = (id, body)   => api.patch(`/admin/dark-stores/${id}/operating-hours`, body);
+const listDocuments       = (id)         => api.get(`/admin/dark-stores/${id}/documents`);
+const addDocument         = (id, body)   => api.post(`/admin/dark-stores/${id}/documents`, body);
+const updateDocument      = (id, dId, b) => api.patch(`/admin/dark-stores/${id}/documents/${dId}`, b);
+const deleteDocument      = (id, dId)    => api.delete(`/admin/dark-stores/${id}/documents/${dId}`);
+const expiringDocuments   = (params)     => api.get('/admin/dark-stores/alerts/expiring-documents', { params });
+const listEquipment       = (id)         => api.get(`/admin/dark-stores/${id}/equipment`);
+const addEquipment        = (id, body)   => api.post(`/admin/dark-stores/${id}/equipment`, body);
+const updateEquipment     = (id, eId, b) => api.patch(`/admin/dark-stores/${id}/equipment/${eId}`, b);
+const decommission        = (id, eId)    => api.delete(`/admin/dark-stores/${id}/equipment/${eId}`);
+const getPerformance      = (id)         => api.get(`/admin/dark-stores/${id}/performance`);
 
 const storesService = {
-  list, getById, create, update, updateStatus,
-  capacity, updateSlaConfig, documents, updateDocument, performance,
+  stats, list, create, getById, update, deleteStore,
+  updateStatus, emergencyShutdown, assignManager,
+  updatePincodes, updateZones,
+  updateSla, updateCapacity, updateHours,
+  listDocuments, addDocument, updateDocument, deleteDocument, expiringDocuments,
+  listEquipment, addEquipment, updateEquipment, decommission,
+  getPerformance,
 };
 export default storesService;
