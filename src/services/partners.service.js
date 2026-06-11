@@ -1,47 +1,45 @@
 import api from '../lib/apiClient';
 
-// GET /admin/partners
-// params: status, store_id, onboarding_status, kyc_status, search, page, limit
-const list = (params) => api.get('/admin/partners', { params });
-
-// GET /admin/partners/:id
-const getById = (id) => api.get(`/admin/partners/${id}`);
-
-// PATCH /admin/partners/:id/status
-// body: { status, reason }
-const updateStatus = (id, body) => api.patch(`/admin/partners/${id}/status`, body);
-
-// GET /admin/partners/:id/earnings
-// params: date_from, date_to, page, limit
-const earnings = (id, params) => api.get(`/admin/partners/${id}/earnings`, { params });
-
-// GET /admin/partners/:id/kyc-documents
-const kycDocuments = (id) => api.get(`/admin/partners/${id}/kyc-documents`);
-
-// PATCH /admin/partners/:id/kyc-documents/:docId
-// body: { status (approved|rejected), rejection_reason }
-const updateKycDocument = (id, docId, body) =>
-  api.patch(`/admin/partners/${id}/kyc-documents/${docId}`, body);
-
-// GET /admin/partners/:id/performance
-// params: date_from, date_to
-const performance = (id, params) => api.get(`/admin/partners/${id}/performance`, { params });
-
-// POST /admin/partners/:id/penalties
-// body: { reason, penalty_amount_inr, description }
-const addPenalty = (id, body) => api.post(`/admin/partners/${id}/penalties`, body);
-
-// POST /admin/partners/:id/incentives
-// body: { incentive_type, amount_inr, valid_from, valid_to, description }
-const addIncentive = (id, body) => api.post(`/admin/partners/${id}/incentives`, body);
-
-// GET /admin/partners/live
-// params: store_id, status
-// res: array of partners with current lat/lng for map view
-const live = (params) => api.get('/admin/partners/live', { params });
+const stats               = (params)         => api.get('/admin/partners/stats', { params });
+const kycExpiringAlert    = (params)         => api.get('/admin/partners/alerts/kyc-expiring', { params });
+const list                = (params)         => api.get('/admin/partners', { params });
+const create              = (body)           => api.post('/admin/partners', body);
+const getById             = (id)             => api.get(`/admin/partners/${id}`);
+const update              = (id, body)       => api.patch(`/admin/partners/${id}`, body);
+const deletePartner       = (id, body)       => api.delete(`/admin/partners/${id}`, { body });
+const updateStatus        = (id, body)       => api.patch(`/admin/partners/${id}/status`, body);
+const updateOnboarding    = (id, body)       => api.patch(`/admin/partners/${id}/onboarding`, body);
+const reassignStore       = (id, body)       => api.patch(`/admin/partners/${id}/dark-store`, body);
+const updateKyc           = (id, body)       => api.patch(`/admin/partners/${id}/kyc`, body);
+const listKycDocs         = (id)             => api.get(`/admin/partners/${id}/kyc-documents`);
+const addKycDoc           = (id, body)       => api.post(`/admin/partners/${id}/kyc-documents`, body);
+const updateKycDoc        = (id, dId, body)  => api.patch(`/admin/partners/${id}/kyc-documents/${dId}`, body);
+const deleteKycDoc        = (id, dId)        => api.delete(`/admin/partners/${id}/kyc-documents/${dId}`);
+const updateVehicle       = (id, body)       => api.patch(`/admin/partners/${id}/vehicle`, body);
+const updateBankAccount   = (id, body)       => api.patch(`/admin/partners/${id}/bank-account`, body);
+const updateCommission    = (id, body)       => api.patch(`/admin/partners/${id}/commission`, body);
+const updateBgCheck       = (id, body)       => api.patch(`/admin/partners/${id}/background-check`, body);
+const listPenalties       = (id)             => api.get(`/admin/partners/${id}/penalties`);
+const addPenalty          = (id, body)       => api.post(`/admin/partners/${id}/penalties`, body);
+const waivePenalty        = (id, pId, body)  => api.patch(`/admin/partners/${id}/penalties/${pId}/waive`, body);
+const listIncentives      = (id, params)     => api.get(`/admin/partners/${id}/incentives`, { params });
+const addIncentive        = (id, body)       => api.post(`/admin/partners/${id}/incentives`, body);
+const updateIncentive     = (id, iId, body)  => api.patch(`/admin/partners/${id}/incentives/${iId}`, body);
+const deleteIncentive     = (id, iId)        => api.delete(`/admin/partners/${id}/incentives/${iId}`);
+const getEarnings         = (id, params)     => api.get(`/admin/partners/${id}/earnings`, { params });
+const addEarningRecord    = (id, body)       => api.post(`/admin/partners/${id}/earnings/record`, body);
+const triggerPayout       = (id, body)       => api.post(`/admin/partners/${id}/earnings/payout`, body);
+const updatePerformance   = (id, body)       => api.patch(`/admin/partners/${id}/performance`, body);
 
 const partnersService = {
-  list, getById, updateStatus, earnings, kycDocuments,
-  updateKycDocument, performance, addPenalty, addIncentive, live,
+  stats, kycExpiringAlert,
+  list, create, getById, update, deletePartner,
+  updateStatus, updateOnboarding, reassignStore,
+  updateKyc, listKycDocs, addKycDoc, updateKycDoc, deleteKycDoc,
+  updateVehicle, updateBankAccount, updateCommission, updateBgCheck,
+  listPenalties, addPenalty, waivePenalty,
+  listIncentives, addIncentive, updateIncentive, deleteIncentive,
+  getEarnings, addEarningRecord, triggerPayout,
+  updatePerformance,
 };
 export default partnersService;
